@@ -4,9 +4,7 @@
     <div class="button-group">
       <button @click="changeSize(0)">Hide</button>
       <button @click="changeSize(400)">show</button>
-      <button @click="displayMarker(markerPositions1)">marker set 1</button>
-      <button @click="displayMarker(markerPositions2)">marker set 2</button>
-      <button @click="displayMarker([])">marker set 3 (empty)</button>
+      <button @click="emptyMarkers">마커 지우기</button>
       <button @click="displayInfoWindow">infowindow</button>
     </div>
     <b-form-select v-model="currentGu" :options="options"></b-form-select>
@@ -28,21 +26,6 @@ export default {
       currentGu: null,
       guList: [],
       options: [],
-      markerPositions1: [
-        [33.452278, 126.567803],
-        [33.452671, 126.574792],
-        [33.451744, 126.572441],
-      ],
-      markerPositions2: [
-        [37.499590490909185, 127.0263723554437],
-        [37.499427948430814, 127.02794423197847],
-        [37.498553760499505, 127.02882598822454],
-        [37.497625593121384, 127.02935713582038],
-        [37.49629291770947, 127.02587362608637],
-        [37.49754540521486, 127.02546694890695],
-        [37.49646391248451, 127.02675574250912],
-      ],
-      markerPositions: [],
       markers: [],
       infowindow: null,
       geocoder: null,
@@ -76,7 +59,7 @@ export default {
       container.style.height = `${size}px`;
       this.map.relayout();
     },
-    getPositions() {
+    async getPositions() {
       //현재 구의 아파트
       const SERVICE_KEY = process.env.VUE_APP_SERVICE_KEY;
       // const SERVICE_KEY =
@@ -92,14 +75,13 @@ export default {
           gu = data.gugunCode;
         }
       });
-      console.log("gucode : " + gu);
       const params = {
         LAWD_CD: gu,
         DEAL_YMD: "201512",
         serviceKey: decodeURIComponent(SERVICE_KEY),
       };
 
-      axios
+      await axios
         .get(SERVICE_URL, {
           params,
         })
@@ -112,45 +94,11 @@ export default {
           console.dir(error);
         });
     },
-    displayMarker(markerPositions) {
-      //마커 없애기
-      if (this.markers.length > 0) {
-        this.markers.forEach((marker) => marker.setMap(null));
-      }
-
-      const positions = markerPositions.map(
-        (position) => new kakao.maps.LatLng(...position),
-      );
-
-      if (positions.length > 0) {
-        this.markers = positions.map((position) => {
-          const marker = new kakao.maps.Marker({
-            map: this.map,
-            position,
-            //clickable: true, // 마커를 클릭했을 때 지도의 클릭 이벤트가 발생하지 않도록 설정합니다
-          });
-          kakao.maps.event.addListener(marker, "click", function () {
-            //클릭이벤트
-            console.log("clicked");
-            //this.infowindow.open(this.map, this.marker);
-          });
-        });
-
-        const bounds = positions.reduce(
-          (bounds, latlng) => bounds.extend(latlng),
-          new kakao.maps.LatLngBounds(),
-        );
-
-        this.map.setBounds(bounds);
-      }
-    },
     async getCurrentGu() {
       await this.searchAddrFromCoords(
         this.map.getCenter(),
         this.displayCenterInfo,
       );
-      console.log(this.markerPositions);
-      this.displayMarker(this.markerPositions);
     },
     async searchAddrFromCoords(coords, callback) {
       // 좌표로 행정동 주소 정보를 요청합니다
@@ -160,7 +108,17 @@ export default {
         callback,
       );
     },
+    emptyMarkers() {
+      //마커 초기화
+      if (this.markers.length > 0) {
+        this.markers.forEach((marker) => marker.setMap(null));
+      }
+    },
     aptlisttocoord() {
+      //aptList로 마커 생성하는 함수
+
+      this.emptyMarkers();
+      //this aptList 에 있는 아파트 정보로 마커 생성
       for (let i = 0; i < this.aptList.length; i++) {
         let dong = this.aptList[i]["법정동"];
         let jibun = this.aptList[i]["지번"];
@@ -168,13 +126,18 @@ export default {
         this.geocoder.addressSearch(`${dong} ${jibun}`, (result, status) => {
           // 정상적으로 검색이 완료됐으면
           if (status === kakao.maps.services.Status.OK) {
-            this.markerPositions.push([result[0].y, result[0].x]);
-            // var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-            // // 결과값으로 받은 위치를 마커로 표시합니다
-            // var marker = new kakao.maps.Marker({
-            //   map: this.map,
-            //   position: coords,
-            // });
+            //마커 객체 생성
+            let marker = new kakao.maps.Marker({
+              map: this.map,
+              position: new kakao.maps.LatLng(result[0].y, result[0].x),
+              title: this.aptList[i]["아파트"],
+            });
+            kakao.maps.event.addListener(marker, "click", function () {
+              //클릭이벤트
+              console.log(marker.getTitle());
+            });
+            //마커 넣기
+            this.markers.push(marker);
           }
         });
       }
@@ -231,27 +194,6 @@ export default {
     }
   },
   created() {
-    // const SERVICE_KEY = process.env.VUE_APP_SERVICE_KEY;
-    // const SERVICE_URL =
-    //   "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTrade";
-    // const params = {
-    //   LAWD_CD: 11110,
-    //   DEAL_YMD: "201512",
-    //   serviceKey: decodeURIComponent(SERVICE_KEY),
-    // };
-
-    // axios
-    //   .get(SERVICE_URL, {
-    //     params,
-    //   })
-    //   .then((response) => {
-    //     console.log(response.data.response.body.items.item);
-    //     //this.aptList = response.data.response.body.items.item;
-    //   })
-    //   .catch((error) => {
-    //     console.dir(error);
-    //   });
-
     http
       .get(`/map/gugun`, {
         params: {
