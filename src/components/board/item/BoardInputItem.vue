@@ -10,11 +10,7 @@
         >
           <b-form-input
             id="userid"
-<<<<<<< HEAD
             disabled
-=======
-            :disabled="isUserid"
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
             v-model="article.userid"
             type="text"
             required
@@ -64,14 +60,10 @@
 </template>
 
 <script>
-<<<<<<< HEAD
 import { writeArticle, getArticle, modifyArticle } from "@/api/board";
 import { mapState } from "vuex";
 
 const memberStore = "memberStore";
-=======
-import http from "@/api/http";
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
 
 export default {
   name: "BoardInputItem",
@@ -83,16 +75,11 @@ export default {
         subject: "",
         content: "",
       },
-<<<<<<< HEAD
-=======
-      isUserid: false,
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
     };
   },
   props: {
     type: { type: String },
   },
-<<<<<<< HEAD
   computed: {
     ...mapState(memberStore, ["userInfo"]),
   },
@@ -114,18 +101,6 @@ export default {
       this.isUserid = true;
     } else {
       this.article.userid = this.userInfo.userid;
-=======
-  created() {
-    if (this.type === "modify") {
-      http.get(`/board/${this.$route.params.articleno}`).then(({ data }) => {
-        // this.article.articleno = data.article.articleno;
-        // this.article.userid = data.article.userid;
-        // this.article.subject = data.article.subject;
-        // this.article.content = data.article.content;
-        this.article = data;
-      });
-      this.isUserid = true;
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
     }
   },
   methods: {
@@ -161,7 +136,6 @@ export default {
       this.$router.push({ name: "boardList" });
     },
     registArticle() {
-<<<<<<< HEAD
       writeArticle(
         {
           userid: this.article.userid,
@@ -169,22 +143,12 @@ export default {
           content: this.article.content,
         },
         ({ data }) => {
-=======
-      http
-        .post(`/board`, {
-          userid: this.article.userid,
-          subject: this.article.subject,
-          content: this.article.content,
-        })
-        .then(({ data }) => {
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
           let msg = "등록 처리시 문제가 발생했습니다.";
           if (data === "success") {
             msg = "등록이 완료되었습니다.";
           }
           alert(msg);
           this.moveList();
-<<<<<<< HEAD
         },
         (error) => {
           console.log(error);
@@ -194,24 +158,12 @@ export default {
     modifyArticle() {
       modifyArticle(
         {
-=======
-        });
-    },
-    modifyArticle() {
-      http
-        .put(`/board/${this.article.articleno}`, {
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
           articleno: this.article.articleno,
           userid: this.article.userid,
           subject: this.article.subject,
           content: this.article.content,
-<<<<<<< HEAD
         },
         ({ data }) => {
-=======
-        })
-        .then(({ data }) => {
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
           let msg = "수정 처리시 문제가 발생했습니다.";
           if (data === "success") {
             msg = "수정이 완료되었습니다.";
@@ -219,15 +171,11 @@ export default {
           alert(msg);
           // 현재 route를 /list로 변경.
           this.$router.push({ name: "boardList" });
-<<<<<<< HEAD
         },
         (error) => {
           console.log(error);
         },
       );
-=======
-        });
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
     },
     moveList() {
       this.$router.push({ name: "boardList" });

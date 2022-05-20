@@ -28,11 +28,7 @@
 </template>
 
 <script>
-<<<<<<< HEAD
 import { listArticle } from "@/api/board";
-=======
-import http from "@/api/http";
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
 
 export default {
   name: "BoardList",
@@ -49,7 +45,6 @@ export default {
     };
   },
   created() {
-<<<<<<< HEAD
     let param = {
       pg: 1,
       spp: 20,
@@ -65,11 +60,6 @@ export default {
         console.log(error);
       },
     );
-=======
-    http.get(`/board`).then(({ data }) => {
-      this.articles = data;
-    });
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
   },
   methods: {
     moveWrite() {

@@ -42,11 +42,7 @@
 
 <script>
 // import moment from "moment";
-<<<<<<< HEAD
 import { getArticle, deleteArticle } from "@/api/board";
-=======
-import http from "@/api/http";
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
 
 export default {
   name: "BoardDetail",
@@ -63,7 +59,6 @@ export default {
     },
   },
   created() {
-<<<<<<< HEAD
     getArticle(
       this.$route.params.articleno,
       (response) => {
@@ -73,11 +68,6 @@ export default {
         console.log("삭제시 에러발생!!", error);
       },
     );
-=======
-    http.get(`/board/${this.$route.params.articleno}`).then(({ data }) => {
-      this.article = data;
-    });
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
   },
   methods: {
     listArticle() {
@@ -92,14 +82,8 @@ export default {
     },
     deleteArticle() {
       if (confirm("정말로 삭제?")) {
-<<<<<<< HEAD
         deleteArticle(this.article.articleno, () => {
           this.$router.push({ name: "boardList" });
-=======
-        this.$router.replace({
-          name: "boardDelete",
-          params: { articleno: this.article.articleno },
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
         });
       }
     },

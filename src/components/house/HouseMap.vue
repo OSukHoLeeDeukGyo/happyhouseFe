@@ -24,10 +24,7 @@ export default {
   components: {},
   data() {
     return {
-<<<<<<< HEAD
-=======
       aptList: [],
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
       currentGu: null,
       guList: [],
       options: [],
@@ -45,10 +42,7 @@ export default {
         [37.49754540521486, 127.02546694890695],
         [37.49646391248451, 127.02675574250912],
       ],
-<<<<<<< HEAD
-=======
       markerPositions: [],
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
       markers: [],
       infowindow: null,
       geocoder: null,
@@ -110,14 +104,9 @@ export default {
           params,
         })
         .then((response) => {
-<<<<<<< HEAD
-          console.log(response.data);
-          //this.aptList = response.data.response.body.items.item;
-=======
           console.log(response.data.response.body.items.item);
           this.aptList = response.data.response.body.items.item;
           this.aptlisttocoord();
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
         })
         .catch((error) => {
           console.dir(error);
@@ -160,12 +149,8 @@ export default {
         this.map.getCenter(),
         this.displayCenterInfo,
       );
-<<<<<<< HEAD
-      console.log("여기", this.currentGu);
-=======
       console.log(this.markerPositions);
       this.displayMarker(this.markerPositions);
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
     },
     async searchAddrFromCoords(coords, callback) {
       // 좌표로 행정동 주소 정보를 요청합니다
@@ -175,8 +160,6 @@ export default {
         callback,
       );
     },
-<<<<<<< HEAD
-=======
     aptlisttocoord() {
       for (let i = 0; i < this.aptList.length; i++) {
         let dong = this.aptList[i]["법정동"];
@@ -196,7 +179,6 @@ export default {
         });
       }
     },
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
     displayCenterInfo(result, status) {
       if (status === kakao.maps.services.Status.OK) {
         //var infoDiv = document.getElementById("centerAddr");
@@ -212,10 +194,6 @@ export default {
         //console.log(result);
         //infoDiv.innerHTML = result[0].region_2depth_name;
         this.currentGu = result[0].region_2depth_name;
-<<<<<<< HEAD
-        console.log("와우", this.currentGu);
-=======
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
         this.getPositions();
       }
     },
@@ -253,8 +231,6 @@ export default {
     }
   },
   created() {
-<<<<<<< HEAD
-=======
     // const SERVICE_KEY = process.env.VUE_APP_SERVICE_KEY;
     // const SERVICE_URL =
     //   "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTrade";
@@ -276,7 +252,6 @@ export default {
     //     console.dir(error);
     //   });
 
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
     http
       .get(`/map/gugun`, {
         params: {
