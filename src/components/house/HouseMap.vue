@@ -209,27 +209,6 @@ export default {
     }
   },
   created() {
-    // const SERVICE_KEY = process.env.VUE_APP_SERVICE_KEY;
-    // const SERVICE_URL =
-    //   "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTrade";
-    // const params = {
-    //   LAWD_CD: 11110,
-    //   DEAL_YMD: "201512",
-    //   serviceKey: decodeURIComponent(SERVICE_KEY),
-    // };
-
-    // axios
-    //   .get(SERVICE_URL, {
-    //     params,
-    //   })
-    //   .then((response) => {
-    //     console.log(response.data.response.body.items.item);
-    //     //this.aptList = response.data.response.body.items.item;
-    //   })
-    //   .catch((error) => {
-    //     console.dir(error);
-    //   });
-
     http
       .get(`/map/gugun`, {
         params: {

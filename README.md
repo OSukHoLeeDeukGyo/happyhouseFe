@@ -1,4 +1,6 @@
-# vue-board-bootstrap
+# HappyHouseFE
+
+HappyHouse Frontend 부분을 제작하고 있습니다.
 
 ## Project setup
 ```
