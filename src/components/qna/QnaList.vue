@@ -6,6 +6,16 @@
       </b-col>
     </b-row>
     <b-row class="mb-1">
+      <b-col class="text-left">
+        <input v-model="searchInput" />
+        <b-button
+          style="margin-left: 0.5rem"
+          variant="outline-danger"
+          type="submit"
+          @click="searchQna"
+          >검색</b-button
+        >
+      </b-col>
       <b-col class="text-right">
         <b-button variant="outline-primary" @click="moveWrite()"
           >글쓰기</b-button
@@ -14,7 +24,7 @@
     </b-row>
     <b-row>
       <b-col v-if="articles.length">
-        <b-table-simple hover responsive>
+        <b-table-simple hover responsive id="qna-list">
           <b-thead head-variant="dark">
             <b-tr>
               <b-th>글번호</b-th>
@@ -26,7 +36,7 @@
           </b-thead>
           <tbody>
             <!-- 하위 component인 ListRow에 데이터 전달(props) -->
-            <board-list-item
+            <qna-list-item
               v-for="article in articles"
               :key="article.articleno"
               v-bind="article"
@@ -36,53 +46,60 @@
       </b-col>
       <!-- <b-col v-else class="text-center">도서 목록이 없습니다.</b-col> -->
     </b-row>
+    <b-row>
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="totalItemsCnt"
+        :per-page="perPage"
+        aria-controls="qna-list"
+      ></b-pagination>
+    </b-row>
   </b-container>
 </template>
 
 <script>
-<<<<<<< HEAD
-import { listArticle } from "@/api/board.js";
-=======
 import http from "@/api/http";
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
-import BoardListItem from "@/components/board/item/BoardListItem";
+import QnaListItem from "@/components/qna/item/QnaListItem";
 
 export default {
-  name: "BoardList",
+  name: "QnaList",
   components: {
-    BoardListItem,
+    QnaListItem,
   },
   data() {
     return {
       articles: [],
+      searchInput: "",
+      perPage: 10,
+      currentPage: 1,
+      totalItemsCnt: 0,
     };
   },
   created() {
-<<<<<<< HEAD
-    let param = {
-      pg: 1,
-      spp: 20,
-      key: null,
-      word: null,
-    };
-    listArticle(
-      param,
-      (response) => {
-        this.articles = response.data;
-      },
-      (error) => {
-        console.log(error);
-      },
-    );
-=======
-    http.get(`/board`).then(({ data }) => {
+    http.get(`/qna`).then(({ data }) => {
+      this.totalItemsCnt = data;
+      console.log(data);
+    });
+    http.get(`/qna/1`).then(({ data }) => {
       this.articles = data;
     });
->>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
   },
   methods: {
     moveWrite() {
-      this.$router.push({ name: "boardRegister" });
+      this.$router.push({ name: "qnaRegister" });
+    },
+
+    searchQna() {
+      http.get(`/qna/search/${this.searchInput}`).then(({ data }) => {
+        this.articles = data;
+      });
+    },
+  },
+  watch: {
+    currentPage(newPage) {
+      http.get(`/qna/${newPage}`).then(({ data }) => {
+        this.articles = data;
+      });
     },
   },
 };

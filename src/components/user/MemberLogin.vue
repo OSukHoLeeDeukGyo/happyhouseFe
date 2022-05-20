@@ -55,14 +55,19 @@
 </template>
 
 <script>
+<<<<<<< HEAD
 import { mapState, mapActions } from "vuex";
 
 const memberStore = "memberStore";
+=======
+// import http from "@/api/http";
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
 
 export default {
   name: "MemberLogin",
   data() {
     return {
+<<<<<<< HEAD
       user: {
         userid: null,
         userpwd: null,
@@ -84,6 +89,40 @@ export default {
     },
     movePage() {
       this.$router.push({ name: "signup" });
+=======
+      isLoginError: false,
+      user: {
+        userid: "",
+        userpwd: "",
+      },
+    };
+  },
+  methods: {
+    confirm() {
+      // 확인 로직이 들어가야함
+      // http.post(`/user/login`, { user: this.user }).then(({ data }) => {
+      //   if (data.statusCode === 200) {
+      //     sessionStorage.setItem("id", this.user.userid);
+      //     alert(`${this.user.userid}님 환영합니다!`);
+      //     this.moveHome();
+      //   } else {
+      //     alert(`잘못된 id 혹은 비밀번호를 입력하셨습니다.`);
+      //     this.moveSignin();
+      //   }
+      // });
+      alert(`${this.user.userid}님 환영합니다!`);
+      sessionStorage.setItem("userid", this.user.userid);
+      this.moveHome();
+    },
+    movePage() {
+      this.$router.push({ name: "SignUp" });
+    },
+    moveHome() {
+      location.href = "/";
+    },
+    moveSignin() {
+      this.$router.push({ name: "SignIn" });
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
     },
   },
 };

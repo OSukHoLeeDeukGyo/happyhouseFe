@@ -1,6 +1,10 @@
 <template>
   <div>
+<<<<<<< HEAD
     <b-navbar class="navbar" toggleable="lg" type="dark">
+=======
+    <b-navbar toggleable="lg" type="dark" variant="dark">
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
       <b-navbar-brand href="#">
         <router-link to="/">
           <img
@@ -17,11 +21,16 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item href="#"
+<<<<<<< HEAD
             ><router-link :to="{ name: 'home' }" class="navItem"
+=======
+            ><router-link :to="{ name: 'home' }" class="link"
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
               ><b-icon icon="house" font-scale="1.5"></b-icon> 홈</router-link
             ></b-nav-item
           >
           <b-nav-item href="#"
+<<<<<<< HEAD
             ><router-link :to="{ name: 'board' }" class="navItem"
               ><b-icon icon="journal" font-scale="1.5"></b-icon>
               공지사항</router-link
@@ -35,16 +44,36 @@
           >
           <b-nav-item href="#"
             ><router-link :to="{ name: 'house' }" class="navItem"
+=======
+            ><router-link :to="{ name: 'board' }" class="link"
+              ><b-icon icon="journal" font-scale="1.5"></b-icon>
+              게시판</router-link
+            ></b-nav-item
+          >
+          <b-nav-item href="#"
+            ><router-link :to="{ name: 'instagram' }" class="link"
+              ><b-icon icon="instagram" font-scale="1.5"></b-icon>
+              인별그램</router-link
+            ></b-nav-item
+          >
+          <b-nav-item href="#"
+            ><router-link :to="{ name: 'house' }" class="link"
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
               ><b-icon icon="house-fill" font-scale="1.5"></b-icon>
               아파트정보</router-link
             ></b-nav-item
           >
           <b-nav-item href="#"
+<<<<<<< HEAD
             ><router-link :to="{ name: 'todo' }" class="navItem"
+=======
+            ><router-link :to="{ name: 'todo' }" class="link"
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
               ><b-icon icon="calendar-check" font-scale="1.5"></b-icon>
               TodoList</router-link
             ></b-nav-item
           >
+<<<<<<< HEAD
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto" v-if="userInfo">
@@ -70,10 +99,25 @@
           >
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto" v-else>
+=======
+          <b-nav-item href="#"
+            ><router-link :to="{ name: 'qna' }" class="link"
+              ><b-icon icon="question-diamond" font-scale="1.5"></b-icon>
+              Q&A</router-link
+            ></b-nav-item
+          >
+          <b-nav-item href="#" v-if="userid"
+            >{{ userid }}님 안녕하세요!</b-nav-item
+          >
+        </b-navbar-nav>
+
+        <b-navbar-nav class="ml-auto">
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
           <b-nav-item-dropdown right>
             <template #button-content>
               <b-icon icon="people" font-scale="2"></b-icon>
             </template>
+<<<<<<< HEAD
             <b-dropdown-item href="#"
               ><router-link :to="{ name: 'signUp' }" class="link"
                 ><b-icon icon="person-circle"></b-icon> 회원가입</router-link
@@ -84,6 +128,25 @@
                 ><b-icon icon="key"></b-icon> 로그인</router-link
               ></b-dropdown-item
             >
+=======
+            <div class="guest" v-if="!userid">
+              <b-dropdown-item href="#"
+                ><router-link :to="{ name: 'signUp' }" class="link"
+                  ><b-icon icon="person-circle"></b-icon> 회원가입</router-link
+                ></b-dropdown-item
+              >
+              <b-dropdown-item href="#"
+                ><router-link :to="{ name: 'signIn' }" class="link"
+                  ><b-icon icon="key"></b-icon> 로그인</router-link
+                ></b-dropdown-item
+              >
+            </div>
+            <div class="member" v-else>
+              <b-dropdown-item @click="logout"
+                ><b-icon icon="backspace"></b-icon> 로그아웃</b-dropdown-item
+              >
+            </div>
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-collapse>
@@ -92,6 +155,7 @@
 </template>
 
 <script>
+<<<<<<< HEAD
 import { mapState, mapMutations } from "vuex";
 // import ms from "@/store/modules/memberStore";
 
@@ -110,11 +174,29 @@ export default {
       this.SET_USER_INFO(null);
       sessionStorage.removeItem("access-token");
       if (this.$route.path != "/") this.$router.push({ name: "home" });
+=======
+export default {
+  name: "HeaderNaviBar",
+  data() {
+    return {
+      userid: "",
+    };
+  },
+  created() {
+    this.userid = sessionStorage.getItem("userid");
+  },
+  methods: {
+    logout() {
+      console.log("wow");
+      sessionStorage.removeItem("userid");
+      location.href = "/";
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
     },
   },
 };
 </script>
 
+<<<<<<< HEAD
 <style lang="scss" scoped>
 .navbar {
   background-color: #0e6400;
@@ -124,3 +206,6 @@ export default {
   }
 }
 </style>
+=======
+<style></style>
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019

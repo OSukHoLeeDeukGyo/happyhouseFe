@@ -22,8 +22,11 @@
 <script>
 import { mapActions } from "vuex";
 
+<<<<<<< HEAD
 const houseStore = "houseStore";
 
+=======
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
 export default {
   name: "HouseListItem",
   data() {
@@ -35,9 +38,15 @@ export default {
     house: Object,
   },
   methods: {
+<<<<<<< HEAD
     ...mapActions(houseStore, ["detailHouse"]),
     selectHouse() {
       // console.log("listRow : ", this.house);
+=======
+    ...mapActions(["detailHouse"]),
+    selectHouse() {
+      console.log("listRow : ", this.house);
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
       // this.$store.dispatch("getHouse", this.house);
       this.detailHouse(this.house);
     },

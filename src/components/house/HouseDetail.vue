@@ -50,12 +50,19 @@
 <script>
 import { mapState } from "vuex";
 
+<<<<<<< HEAD
 const houseStore = "houseStore";
 
 export default {
   name: "HouseDetail",
   computed: {
     ...mapState(houseStore, ["house"]),
+=======
+export default {
+  name: "HouseDetail",
+  computed: {
+    ...mapState(["house"]),
+>>>>>>> 57b1d6c2ae20ba5f3e333c2b74e19dc83af08019
     // house() {
     //   return this.$store.state.house;
     // },
