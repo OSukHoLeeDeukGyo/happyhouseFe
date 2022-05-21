@@ -18,9 +18,7 @@ const onlyAuthUser = async (to, from, next) => {
   if (checkUserInfo === null) {
     alert("로그인이 필요한 페이지입니다..");
     next({ name: "signIn" });
-    // router.push({ name: "signIn" });
   } else {
-    // console.log("로그인 했다.");
     next();
   }
 };
@@ -42,7 +40,7 @@ const routes = [
         component: () => import("@/components/user/MemberLogin.vue"),
       },
       {
-        path: "singup",
+        path: "signup",
         name: "signUp",
         component: () => import("@/components/user/MemberRegister.vue"),
       },
