@@ -50,6 +50,16 @@ const routes = [
         beforeEnter: onlyAuthUser,
         component: () => import("@/components/user/MemberMyPage.vue"),
       },
+      {
+        path: "infomodify",
+        name: "infoModify",
+        component: () => import("@/components/user/MemberModify.vue"),
+      },
+      {
+        path: "accountdelete",
+        name: "accountDelete",
+        component: () => import("@/components/user/MemberDelete.vue"),
+      },
     ],
   },
   {

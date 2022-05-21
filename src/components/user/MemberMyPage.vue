@@ -47,7 +47,9 @@
           </b-container>
           <hr class="my-4" />
 
-          <b-button variant="primary" href="#" class="mr-1">정보수정</b-button>
+          <b-button variant="primary" href="#" class="mr-1" @click="goModify"
+            >정보수정</b-button
+          >
           <b-button variant="danger" href="#">회원탈퇴</b-button>
         </b-jumbotron>
       </b-col>
@@ -66,6 +68,14 @@ export default {
   components: {},
   computed: {
     ...mapState(memberStore, ["userInfo"]),
+  },
+  methods: {
+    goModify() {
+      this.$router.push({ name: "infoModify" });
+    },
+    goDelete() {
+      this.$router.push({ name: "infoDelete" });
+    },
   },
 };
 </script>
