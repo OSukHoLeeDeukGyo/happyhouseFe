@@ -42,10 +42,10 @@
 
 <script>
 // import moment from "moment";
-import { getArticle, deleteArticle } from "@/api/board";
+import { getArticle, deleteArticle } from "@/api/notice";
 
 export default {
-  name: "BoardDetail",
+  name: "NoticeDetail",
   data() {
     return {
       article: {},
@@ -71,19 +71,19 @@ export default {
   },
   methods: {
     listArticle() {
-      this.$router.push({ name: "boardList" });
+      this.$router.push({ name: "noticeList" });
     },
     moveModifyArticle() {
       this.$router.replace({
-        name: "boardModify",
+        name: "noticeModify",
         params: { articleno: this.article.articleno },
       });
-      //   this.$router.push({ path: `/board/modify/${this.article.articleno}` });
+      //   this.$router.push({ path: `/notice/modify/${this.article.articleno}` });
     },
     deleteArticle() {
       if (confirm("정말로 삭제?")) {
         deleteArticle(this.article.articleno, () => {
-          this.$router.push({ name: "boardList" });
+          this.$router.push({ name: "noticeList" });
         });
       }
     },

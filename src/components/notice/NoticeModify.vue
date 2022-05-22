@@ -5,17 +5,17 @@
         <b-alert show><h3>글수정</h3></b-alert>
       </b-col>
     </b-row>
-    <board-input-item type="modify" />
+    <notice-input-item type="modify" />
   </b-container>
 </template>
 
 <script>
-import BoardInputItem from "@/components/board/item/BoardInputItem.vue";
+import NoticeInputItem from "@/components/notice/item/NoticeInputItem.vue";
 
 export default {
-  name: "BoardModify",
+  name: "NoticeModify",
   components: {
-    BoardInputItem,
+    NoticeInputItem,
   },
 };
 </script>

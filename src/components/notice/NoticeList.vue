@@ -2,7 +2,7 @@
   <b-container class="bv-example-row mt-3">
     <b-row>
       <b-col>
-        <b-alert show><h3>글목록</h3></b-alert>
+        <b-alert show><h3>공지사항</h3></b-alert>
       </b-col>
     </b-row>
     <b-row class="mb-1">
@@ -26,7 +26,7 @@
           </b-thead>
           <tbody>
             <!-- 하위 component인 ListRow에 데이터 전달(props) -->
-            <board-list-item
+            <notice-list-item
               v-for="article in articles"
               :key="article.articleno"
               v-bind="article"
@@ -40,13 +40,13 @@
 </template>
 
 <script>
-import { listArticle } from "@/api/board.js";
-import BoardListItem from "@/components/board/item/BoardListItem";
+import { listArticle } from "@/api/notice.js";
+import NoticeListItem from "@/components/notice/item/NoticeListItem";
 
 export default {
-  name: "BoardList",
+  name: "NoticeList",
   components: {
-    BoardListItem,
+    NoticeListItem,
   },
   data() {
     return {
@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     moveWrite() {
-      this.$router.push({ name: "boardRegister" });
+      this.$router.push({ name: "noticeRegister" });
     },
   },
 };
