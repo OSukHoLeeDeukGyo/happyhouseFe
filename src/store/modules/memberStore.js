@@ -59,6 +59,9 @@ const memberStore = {
         },
       );
     },
+    setUserInfo({ commit }, userinfo) {
+      commit("SET_USER_INFO", userinfo);
+    },
   },
 };
 

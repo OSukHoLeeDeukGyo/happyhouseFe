@@ -50,7 +50,9 @@
           <b-button variant="primary" href="#" class="mr-1" @click="goModify"
             >정보수정</b-button
           >
-          <b-button variant="danger" href="#">회원탈퇴</b-button>
+          <b-button variant="danger" href="#" @click="goDelete"
+            >회원탈퇴</b-button
+          >
         </b-jumbotron>
       </b-col>
       <b-col></b-col>
@@ -74,7 +76,7 @@ export default {
       this.$router.push({ name: "infoModify" });
     },
     goDelete() {
-      this.$router.push({ name: "infoDelete" });
+      this.$router.push({ name: "accountDelete" });
     },
   },
 };
