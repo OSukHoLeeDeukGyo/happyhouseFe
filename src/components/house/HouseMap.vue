@@ -2,8 +2,6 @@
   <b-container class="bv-example-row">
     <div id="map"></div>
     <div class="button-group">
-      <button @click="changeSize(0)">Hide</button>
-      <button @click="changeSize(400)">show</button>
       <button @click="emptyMarkers">마커 지우기</button>
       <button @click="displayInfoWindow">infowindow</button>
     </div>
@@ -15,8 +13,9 @@
   </b-container>
 </template>
 <script>
-import axios from "axios";
+//import axios from "axios";
 import http from "@/api/http";
+import { mapActions } from "vuex";
 export default {
   name: "HouseMap",
   components: {},
@@ -24,6 +23,7 @@ export default {
     return {
       aptList: [],
       currentGu: null,
+      currentDong: null,
       guList: [],
       options: [],
       markers: [],
@@ -38,6 +38,12 @@ export default {
     // },
   },
   methods: {
+    ...mapActions(["detailHouse"]),
+    selectHouse() {
+      console.log("marker select : ", this.house);
+      // this.$store.dispatch("getHouse", this.house);
+      this.detailHouse(this.house);
+    },
     initMap() {
       const container = document.getElementById("map");
       const options = {
@@ -53,34 +59,49 @@ export default {
       //   this.searchAddrFromCoords(this.map.getCenter(), this.displayCenterInfo);
       // });
     },
-    changeSize(size) {
-      const container = document.getElementById("map");
-      container.style.width = `${size}px`;
-      container.style.height = `${size}px`;
-      this.map.relayout();
-    },
     async getPositions() {
       //현재 구의 아파트
-      const SERVICE_KEY = process.env.VUE_APP_SERVICE_KEY;
-      // const SERVICE_KEY =
-      //   "9Xo0vlglWcOBGUDxH8PPbuKnlBwbWU6aO7%2Bk3FV4baF9GXok1yxIEF%2BIwr2%2B%2F%2F4oVLT8bekKU%2Bk9ztkJO0wsBw%3D%3D";
+      /*const SERVICE_KEY = process.env.VUE_APP_SERVICE_KEY;
       const SERVICE_URL =
         "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTrade";
-
-      let gu;
-      console.log("currentgu: " + this.currentGu);
+*/
+      let gu; //현재 구 코드
 
       this.guList.forEach((data) => {
         if (data.gugunName == this.currentGu) {
           gu = data.gugunCode;
         }
       });
-      const params = {
+      console.log("currentgu: " + gu);
+
+      /*const params = {
         LAWD_CD: gu,
         DEAL_YMD: "201512",
         serviceKey: decodeURIComponent(SERVICE_KEY),
-      };
+      };*/
 
+      await http
+        .get(`/map/guApt`, {
+          params: {
+            gu: gu,
+          },
+        })
+        .then(({ data }) => {
+          //console.log(data);
+          //this.guList = data;
+          this.aptList = data;
+          //this.options.value = data.gugunName;
+          console.log(this.aptList);
+
+          // console.log(commit, response);
+          //commit("SET_GUGUN_LIST", data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      this.aptListToMarkers();
+      /*
       await axios
         .get(SERVICE_URL, {
           params,
@@ -88,11 +109,11 @@ export default {
         .then((response) => {
           console.log(response.data.response.body.items.item);
           this.aptList = response.data.response.body.items.item;
-          this.aptlisttocoord();
+          this.aptListToMarkers();
         })
         .catch((error) => {
           console.dir(error);
-        });
+        });*/
     },
     async getCurrentGu() {
       await this.searchAddrFromCoords(
@@ -114,14 +135,28 @@ export default {
         this.markers.forEach((marker) => marker.setMap(null));
       }
     },
-    aptlisttocoord() {
+    aptListToMarkers() {
       //aptList로 마커 생성하는 함수
 
       this.emptyMarkers();
       //this aptList 에 있는 아파트 정보로 마커 생성
       for (let i = 0; i < this.aptList.length; i++) {
-        let dong = this.aptList[i]["법정동"];
-        let jibun = this.aptList[i]["지번"];
+        let marker = new kakao.maps.Marker({
+          map: this.map,
+          position: new kakao.maps.LatLng(
+            this.aptList[i].lat,
+            this.aptList[i].lng,
+          ),
+          title: this.aptList[i].aptCode,
+        });
+        kakao.maps.event.addListener(marker, "click", function () {
+          //클릭이벤트 추가
+          console.log(marker.getTitle());
+        });
+        //마커 넣기
+        this.markers.push(marker);
+
+        /*
         //주소로 좌표얻기
         this.geocoder.addressSearch(`${dong} ${jibun}`, (result, status) => {
           // 정상적으로 검색이 완료됐으면
@@ -139,8 +174,10 @@ export default {
             //마커 넣기
             this.markers.push(marker);
           }
-        });
+        });*/
       }
+
+      //happyhouse db사용시 aptList에 lng lat 정보까지 포함
     },
     displayCenterInfo(result, status) {
       if (status === kakao.maps.services.Status.OK) {
@@ -157,6 +194,7 @@ export default {
         //console.log(result);
         //infoDiv.innerHTML = result[0].region_2depth_name;
         this.currentGu = result[0].region_2depth_name;
+        this.currentDong = result[0].region_3depth_name;
         this.getPositions();
       }
     },
