@@ -15,7 +15,11 @@
       <span id="centerAddr">{{ currentGu }}</span>
     </div>
 
-    <house-detail v-if="aptSelected"></house-detail>
+    <house-detail
+      v-if="aptSelected"
+      :currentApt="currentApt"
+      @isAptSelected="isAptSelected"
+    ></house-detail>
   </b-container>
 </template>
 <script>
@@ -38,6 +42,7 @@ export default {
       options: [],
       markers: [],
       aptSelected: false,
+      currentApt: null,
       infowindow: null,
       geocoder: null,
       map: null,
@@ -49,6 +54,9 @@ export default {
     // },
   },
   methods: {
+    isAptSelected() {
+      this.aptSelected = false;
+    },
     ...mapActions(["detailHouse"]),
     selectHouse(aptCode) {
       console.log("marker select : ", aptCode);
@@ -189,9 +197,14 @@ export default {
           ),
           title: this.aptList[i].aptCode,
         });
-        kakao.maps.event.addListener(marker, "click", function () {
+        kakao.maps.event.addListener(marker, "click", () => {
           //클릭이벤트 추가
-          console.log(marker.getTitle());
+
+          this.aptSelected = true;
+
+          this.currentApt = marker.getTitle();
+          console.log(this.currentApt, this.aptSelected);
+          //this.selectHouse(marker.getTitle());
         });
         //마커 넣기
         this.markers.push(marker);
