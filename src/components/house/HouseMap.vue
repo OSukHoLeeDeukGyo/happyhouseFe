@@ -5,7 +5,11 @@
       <button @click="emptyMarkers">마커 지우기</button>
       <button @click="displayInfoWindow">infowindow</button>
     </div>
-    <b-form-select v-model="currentGu" :options="options"></b-form-select>
+    <b-form-select
+      @change="setCurrentGu"
+      v-model="currentGu"
+      :options="options"
+    ></b-form-select>
     <div class="hAddr">
       <button @click="getCurrentGu">현재 구 불러오기</button>
       <span id="centerAddr">{{ currentGu }}</span>
@@ -116,6 +120,9 @@ export default {
       this.getAptListCenter();
       this.aptListToMarkers();
     },
+    async setCurrentGu() {
+      this.getPositions();
+    },
     async getCurrentGu() {
       await this.searchAddrFromCoords(
         this.map.getCenter(),
@@ -134,15 +141,21 @@ export default {
         if (maxLng < apt.lng) maxLng = apt.lng;
         if (minLng > apt.lng) minLng = apt.lng;
       });
-
+      //console.log(maxLng, minLng);
+      //console.log(maxLat, minLat);
       this.aptListCenter = {
-        lngCenter: (maxLng + minLng) / 2,
-        latCenter: (maxLat + minLat) / 2,
+        lngCenter: (parseFloat(maxLng) + parseFloat(minLng)) / 2,
+        latCenter: (parseFloat(maxLat) + parseFloat(minLat)) / 2,
       };
+      this.panTo();
     },
     panTo() {
+      console.log(this.aptListCenter.lngCenter);
       // 이동할 위도 경도 위치를 생성합니다
-      var moveLatLon = new kakao.maps.LatLng(33.45058, 126.574942);
+      var moveLatLon = new kakao.maps.LatLng(
+        this.aptListCenter.latCenter,
+        this.aptListCenter.lngCenter,
+      );
 
       // 지도 중심을 부드럽게 이동시킵니다
       // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
