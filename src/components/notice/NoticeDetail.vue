@@ -15,9 +15,14 @@
           size="sm"
           @click="moveModifyArticle"
           class="mr-2"
+          v-if="isAdmin"
           >글수정</b-button
         >
-        <b-button variant="outline-danger" size="sm" @click="deleteArticle"
+        <b-button
+          variant="outline-danger"
+          size="sm"
+          @click="deleteArticle"
+          v-if="isAdmin"
           >글삭제</b-button
         >
       </b-col>
@@ -43,15 +48,19 @@
 <script>
 // import moment from "moment";
 import { getArticle, deleteArticle } from "@/api/notice";
+import { mapState } from "vuex";
+const memberStore = "memberStore";
 
 export default {
   name: "NoticeDetail",
   data() {
     return {
       article: {},
+      isAdmin: false,
     };
   },
   computed: {
+    ...mapState(memberStore, ["userInfo"]),
     message() {
       if (this.article.content)
         return this.article.content.split("\n").join("<br>");
@@ -68,6 +77,9 @@ export default {
         console.log("삭제시 에러발생!!", error);
       },
     );
+    if (this.userInfo.userid === "admin") {
+      this.isAdmin = true;
+    }
   },
   methods: {
     listArticle() {

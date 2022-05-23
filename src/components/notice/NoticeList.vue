@@ -7,7 +7,7 @@
     </b-row>
     <b-row class="mb-1">
       <b-col class="text-right">
-        <b-button variant="outline-primary" @click="moveWrite()"
+        <b-button variant="outline-primary" @click="moveWrite()" v-if="isAdmin"
           >글쓰기</b-button
         >
       </b-col>
@@ -42,6 +42,8 @@
 <script>
 import { listArticle } from "@/api/notice.js";
 import NoticeListItem from "@/components/notice/item/NoticeListItem";
+import { mapState } from "vuex";
+const memberStore = "memberStore";
 
 export default {
   name: "NoticeList",
@@ -51,6 +53,7 @@ export default {
   data() {
     return {
       articles: [],
+      isAdmin: false,
     };
   },
   created() {
@@ -69,6 +72,12 @@ export default {
         console.log(error);
       },
     );
+    if (this.userInfo.userid === "admin") {
+      this.isAdmin = true;
+    }
+  },
+  computed: {
+    ...mapState(memberStore, ["userInfo"]),
   },
   methods: {
     moveWrite() {
