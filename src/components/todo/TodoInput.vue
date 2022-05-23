@@ -5,10 +5,10 @@
         <b-input-group prepend="할일" class="mt-3">
           <b-form-input
             v-model.trim="todoTitle"
-            @keypress.enter="createTodo"
+            @keypress.enter="registerTodo"
           ></b-form-input>
           <b-input-group-append>
-            <b-button variant="outline-success" @click="createTodo"
+            <b-button variant="outline-success" @click="registerTodo"
               >등록</b-button
             >
           </b-input-group-append>
@@ -19,6 +19,10 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
+const todoStore = "todoStore";
+
 export default {
   name: "TodoInput",
   data() {
@@ -27,7 +31,8 @@ export default {
     };
   },
   methods: {
-    createTodo() {
+    ...mapActions(todoStore, ["createTodo"]),
+    registerTodo() {
       //   console.log('Create Todo!!');
       //   console.log(this.$store);
       const todoItem = {
@@ -35,7 +40,9 @@ export default {
         completed: false,
       };
       //   this.$store.commit('CREATE_TODO', todoItem);
-      if (todoItem.title) this.$store.dispatch("createTodo", todoItem);
+      if (todoItem.title) this.createTodo(todoItem);
+      // this.$store.dispatch("createTodo", todoItem);
+
       this.todoTitle = "";
     },
   },

@@ -2,12 +2,12 @@
   <b-container class="bv-example-row mt-3">
     <b-row>
       <b-col>
-        <b-alert show><h3>글목록</h3></b-alert>
+        <b-alert show><h3>공지사항</h3></b-alert>
       </b-col>
     </b-row>
     <b-row class="mb-1">
       <b-col class="text-right">
-        <b-button variant="outline-primary" @click="moveWrite()"
+        <b-button variant="outline-primary" @click="moveWrite()" v-if="isAdmin"
           >글쓰기</b-button
         >
       </b-col>
@@ -26,7 +26,7 @@
           </b-thead>
           <tbody>
             <!-- 하위 component인 ListRow에 데이터 전달(props) -->
-            <board-list-item
+            <notice-list-item
               v-for="article in articles"
               :key="article.articleno"
               v-bind="article"
@@ -40,27 +40,48 @@
 </template>
 
 <script>
-import http from "@/api/http";
-import BoardListItem from "@/components/board/item/BoardListItem";
+import { listArticle } from "@/api/notice.js";
+import NoticeListItem from "@/components/notice/item/NoticeListItem";
+import { mapState } from "vuex";
+const memberStore = "memberStore";
 
 export default {
-  name: "BoardList",
+  name: "NoticeList",
   components: {
-    BoardListItem,
+    NoticeListItem,
   },
   data() {
     return {
       articles: [],
+      isAdmin: false,
     };
   },
   created() {
-    http.get(`/board`).then(({ data }) => {
-      this.articles = data;
-    });
+    let param = {
+      pg: 1,
+      spp: 20,
+      key: null,
+      word: null,
+    };
+    listArticle(
+      param,
+      (response) => {
+        this.articles = response.data;
+      },
+      (error) => {
+        console.log(error);
+      },
+    );
+    if (this.userInfo.userid === "admin") {
+      this.isAdmin = true;
+    }
+  },
+  computed: {
+    ...mapState(memberStore, ["userInfo"]),
   },
   methods: {
     moveWrite() {
-      this.$router.push({ name: "boardRegister" });
+      this.$router.push({ name: "noticeRegister" });
     },
   },
 };

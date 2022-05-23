@@ -6,7 +6,6 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col></b-col>
       <b-col cols="8">
         <b-card class="text-center mt-3" style="max-width: 40rem" align="left">
           <b-form class="text-left">
@@ -49,50 +48,40 @@
           </b-form>
         </b-card>
       </b-col>
-      <b-col></b-col>
     </b-row>
   </b-container>
 </template>
 
 <script>
-// import http from "@/api/http";
+import { mapState, mapActions } from "vuex";
+
+const memberStore = "memberStore";
 
 export default {
   name: "MemberLogin",
   data() {
     return {
-      isLoginError: false,
       user: {
-        userid: "",
-        userpwd: "",
+        userid: null,
+        userpwd: null,
       },
     };
   },
+  computed: {
+    ...mapState(memberStore, ["isLogin", "isLoginError"]),
+  },
   methods: {
-    confirm() {
-      // 확인 로직이 들어가야함
-      // http.post(`/user/login`, { user: this.user }).then(({ data }) => {
-      //   if (data.statusCode === 200) {
-      //     sessionStorage.setItem("id", this.user.userid);
-      //     alert(`${this.user.userid}님 환영합니다!`);
-      //     this.moveHome();
-      //   } else {
-      //     alert(`잘못된 id 혹은 비밀번호를 입력하셨습니다.`);
-      //     this.moveSignin();
-      //   }
-      // });
-      alert(`${this.user.userid}님 환영합니다!`);
-      sessionStorage.setItem("userid", this.user.userid);
-      this.moveHome();
+    ...mapActions(memberStore, ["userConfirm", "getUserInfo"]),
+    async confirm() {
+      await this.userConfirm(this.user);
+      let token = sessionStorage.getItem("access-token");
+      if (this.isLogin) {
+        await this.getUserInfo(token);
+        this.$router.push({ name: "home" });
+      }
     },
     movePage() {
-      this.$router.push({ name: "SignUp" });
-    },
-    moveHome() {
-      location.href = "/";
-    },
-    moveSignin() {
-      this.$router.push({ name: "SignIn" });
+      this.$router.push({ name: "signUp" });
     },
   },
 };

@@ -2,21 +2,21 @@
   <b-container class="bv-example-row">
     <b-row class="mt-3">
       <b-col cols="11" class="bg-light p-2 pl-5 text-left">
-        <span
-          :class="{ completed: todo.completed }"
-          @click="updateTodoStatus"
-          >{{ todo.title }}</span
-        >
+        <span :class="{ completed: todo.completed }" @click="statusChange">{{
+          todo.title
+        }}</span>
       </b-col>
       <b-col class="p-2"
-        ><b-button variant="danger" @click="deleteTodo">X</b-button></b-col
+        ><b-button variant="danger" @click="cancelTodo">X</b-button></b-col
       >
     </b-row>
   </b-container>
 </template>
 
 <script>
-// import { maxActions } from "vuex";
+import { mapActions } from "vuex";
+
+const todoStore = "todoStore";
 
 export default {
   name: "TodoListItem",
@@ -24,13 +24,14 @@ export default {
     todo: Object,
   },
   methods: {
-    // ...mapActions(["deleteTodo", "updateTodoStatus"])
-    deleteTodo() {
-      console.log("deleteTodo Call");
-      this.$store.dispatch("deleteTodo", this.todo);
+    ...mapActions(todoStore, ["deleteTodo", "updateTodoStatus"]),
+    cancelTodo() {
+      // this.$store.dispatch("deleteTodo", this.todo);
+      this.deleteTodo(this.todo);
     },
-    updateTodoStatus() {
-      this.$store.dispatch("updateTodoStatus", this.todo);
+    statusChange() {
+      // this.$store.dispatch("updateTodoStatus", this.todo);
+      this.updateTodoStatus(this.todo);
     },
   },
 };

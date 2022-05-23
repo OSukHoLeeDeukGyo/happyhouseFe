@@ -24,6 +24,8 @@
 <script>
 import { mapGetters } from "vuex";
 
+const todoStore = "todoStore";
+
 export default {
   name: "TodoHeader",
   computed: {
@@ -44,7 +46,7 @@ export default {
     //   unCompletedTodosCount: 'unCompletedTodosCount',
     // }),
     // 3.
-    ...mapGetters([
+    ...mapGetters(todoStore, [
       "allTodosCount",
       "completedTodosCount",
       "unCompletedTodosCount",

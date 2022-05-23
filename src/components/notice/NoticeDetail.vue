@@ -15,9 +15,14 @@
           size="sm"
           @click="moveModifyArticle"
           class="mr-2"
+          v-if="isAdmin"
           >글수정</b-button
         >
-        <b-button variant="outline-danger" size="sm" @click="deleteArticle"
+        <b-button
+          variant="outline-danger"
+          size="sm"
+          @click="deleteArticle"
+          v-if="isAdmin"
           >글삭제</b-button
         >
       </b-col>
@@ -42,16 +47,20 @@
 
 <script>
 // import moment from "moment";
-import http from "@/api/http";
+import { getArticle, deleteArticle } from "@/api/notice";
+import { mapState } from "vuex";
+const memberStore = "memberStore";
 
 export default {
-  name: "BoardDetail",
+  name: "NoticeDetail",
   data() {
     return {
       article: {},
+      isAdmin: false,
     };
   },
   computed: {
+    ...mapState(memberStore, ["userInfo"]),
     message() {
       if (this.article.content)
         return this.article.content.split("\n").join("<br>");
@@ -59,26 +68,34 @@ export default {
     },
   },
   created() {
-    http.get(`/board/${this.$route.params.articleno}`).then(({ data }) => {
-      this.article = data;
-    });
+    getArticle(
+      this.$route.params.articleno,
+      (response) => {
+        this.article = response.data;
+      },
+      (error) => {
+        console.log("삭제시 에러발생!!", error);
+      },
+    );
+    if (this.userInfo.userid === "admin") {
+      this.isAdmin = true;
+    }
   },
   methods: {
     listArticle() {
-      this.$router.push({ name: "boardList" });
+      this.$router.push({ name: "noticeList" });
     },
     moveModifyArticle() {
       this.$router.replace({
-        name: "boardModify",
+        name: "noticeModify",
         params: { articleno: this.article.articleno },
       });
-      //   this.$router.push({ path: `/board/modify/${this.article.articleno}` });
+      //   this.$router.push({ path: `/notice/modify/${this.article.articleno}` });
     },
     deleteArticle() {
       if (confirm("정말로 삭제?")) {
-        this.$router.replace({
-          name: "boardDelete",
-          params: { articleno: this.article.articleno },
+        deleteArticle(this.article.articleno, () => {
+          this.$router.push({ name: "noticeList" });
         });
       }
     },

@@ -29,6 +29,7 @@ export default {
       aptList: [],
       currentGu: null,
       currentDong: null,
+      aptListCenter: null,
       guList: [],
       options: [],
       markers: [],
@@ -112,7 +113,7 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-
+      this.getAptListCenter();
       this.aptListToMarkers();
     },
     async getCurrentGu() {
@@ -134,7 +135,7 @@ export default {
         if (minLng > apt.lng) minLng = apt.lng;
       });
 
-      return {
+      this.aptListCenter = {
         lngCenter: (maxLng + minLng) / 2,
         latCenter: (maxLat + minLat) / 2,
       };

@@ -16,6 +16,8 @@
 import { mapState } from "vuex";
 import TodoListItem from "@/components/todo/TodoListItem";
 
+const todoStore = "todoStore";
+
 export default {
   name: "TodoList",
   components: {
@@ -31,7 +33,7 @@ export default {
     //   todos: 'todos',
     // }),
     // 3.
-    ...mapState(["todos"]),
+    ...mapState(todoStore, ["todos"]),
   },
 };
 </script>
