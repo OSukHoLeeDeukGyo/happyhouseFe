@@ -10,7 +10,7 @@ export default new Vuex.Store({
     sidos: [{ value: null, text: "선택하세요" }],
     guguns: [{ value: null, text: "선택하세요" }],
     houses: [],
-    house: null,
+    aptCode: null,
     todos: [
       // { title: '할 일1', completed: false },
       // { title: '할 일2', completed: false },
@@ -52,9 +52,9 @@ export default new Vuex.Store({
     SET_HOUSE_LIST(state, houses) {
       state.houses = houses;
     },
-    SET_DETAIL_HOUSE(state, house) {
-      console.log("Mutations", house);
-      state.house = house;
+    SET_DETAIL_HOUSE(state, aptCode) {
+      console.log("Mutations", aptCode);
+      state.aptCode = aptCode;
     },
     /////////////////////////////// House end /////////////////////////////////////
 
@@ -127,10 +127,10 @@ export default new Vuex.Store({
           console.log(error);
         });
     },
-    detailHouse({ commit }, house) {
+    detailHouse({ commit }, aptCode) {
       // 나중에 house.일련번호를 이용하여 API 호출
       // console.log(commit, house);
-      commit("SET_DETAIL_HOUSE", house);
+      commit("SET_DETAIL_HOUSE", aptCode);
     },
     /////////////////////////////// House end /////////////////////////////////////
 

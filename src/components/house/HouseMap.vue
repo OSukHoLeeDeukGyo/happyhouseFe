@@ -10,15 +10,20 @@
       <button @click="getCurrentGu">현재 구 불러오기</button>
       <span id="centerAddr">{{ currentGu }}</span>
     </div>
+
+    <house-detail v-if="aptSelected"></house-detail>
   </b-container>
 </template>
 <script>
 //import axios from "axios";
 import http from "@/api/http";
+import HouseDetail from "@/components/house/HouseDetail.vue";
 import { mapActions } from "vuex";
 export default {
   name: "HouseMap",
-  components: {},
+  components: {
+    HouseDetail,
+  },
   data() {
     return {
       aptList: [],
@@ -27,6 +32,7 @@ export default {
       guList: [],
       options: [],
       markers: [],
+      aptSelected: false,
       infowindow: null,
       geocoder: null,
       map: null,
@@ -39,10 +45,10 @@ export default {
   },
   methods: {
     ...mapActions(["detailHouse"]),
-    selectHouse() {
-      console.log("marker select : ", this.house);
+    selectHouse(aptCode) {
+      console.log("marker select : ", aptCode);
       // this.$store.dispatch("getHouse", this.house);
-      this.detailHouse(this.house);
+      this.detailHouse(aptCode);
     },
     initMap() {
       const container = document.getElementById("map");
@@ -64,44 +70,13 @@ export default {
       /*const SERVICE_KEY = process.env.VUE_APP_SERVICE_KEY;
       const SERVICE_URL =
         "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTrade";
-*/
-      let gu; //현재 구 코드
 
-      this.guList.forEach((data) => {
-        if (data.gugunName == this.currentGu) {
-          gu = data.gugunCode;
-        }
-      });
-      console.log("currentgu: " + gu);
-
-      /*const params = {
+      const params = {
         LAWD_CD: gu,
         DEAL_YMD: "201512",
         serviceKey: decodeURIComponent(SERVICE_KEY),
-      };*/
+      };
 
-      await http
-        .get(`/map/guApt`, {
-          params: {
-            gu: gu,
-          },
-        })
-        .then(({ data }) => {
-          //console.log(data);
-          //this.guList = data;
-          this.aptList = data;
-          //this.options.value = data.gugunName;
-          console.log(this.aptList);
-
-          // console.log(commit, response);
-          //commit("SET_GUGUN_LIST", data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-
-      this.aptListToMarkers();
-      /*
       await axios
         .get(SERVICE_URL, {
           params,
@@ -114,12 +89,63 @@ export default {
         .catch((error) => {
           console.dir(error);
         });*/
+      let gu; //현재 구 코드
+
+      this.guList.forEach((data) => {
+        if (data.gugunName == this.currentGu) {
+          gu = data.gugunCode;
+        }
+      });
+      console.log("currentgu: " + gu);
+
+      await http
+        .get(`/map/guApt`, {
+          params: {
+            gu: gu,
+          },
+        })
+        .then(({ data }) => {
+          this.aptList = data;
+
+          console.log(this.aptList);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      this.aptListToMarkers();
     },
     async getCurrentGu() {
       await this.searchAddrFromCoords(
         this.map.getCenter(),
         this.displayCenterInfo,
       );
+    },
+    getAptListCenter() {
+      let maxLng = 0;
+      let minLng = 180;
+      let maxLat = 0;
+      let minLat = 180;
+      this.aptList.forEach((apt) => {
+        if (maxLat < apt.lat) maxLat = apt.lat;
+
+        if (minLat > apt.lat) minLat = apt.lat;
+        if (maxLng < apt.lng) maxLng = apt.lng;
+        if (minLng > apt.lng) minLng = apt.lng;
+      });
+
+      return {
+        lngCenter: (maxLng + minLng) / 2,
+        latCenter: (maxLat + minLat) / 2,
+      };
+    },
+    panTo() {
+      // 이동할 위도 경도 위치를 생성합니다
+      var moveLatLon = new kakao.maps.LatLng(33.45058, 126.574942);
+
+      // 지도 중심을 부드럽게 이동시킵니다
+      // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
+      this.map.panTo(moveLatLon);
     },
     async searchAddrFromCoords(coords, callback) {
       // 좌표로 행정동 주소 정보를 요청합니다

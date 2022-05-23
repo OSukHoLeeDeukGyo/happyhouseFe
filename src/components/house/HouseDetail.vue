@@ -1,5 +1,5 @@
 <template>
-  <b-container v-if="house" class="bv-example-row">
+  <b-container class="bv-example-row">
     <b-row>
       <b-col
         ><h3>{{ house.아파트 }}</h3></b-col
@@ -53,7 +53,7 @@ import { mapState } from "vuex";
 export default {
   name: "HouseDetail",
   computed: {
-    ...mapState(["house"]),
+    ...mapState(["aptCode"]),
     // house() {
     //   return this.$store.state.house;
     // },
@@ -64,6 +64,7 @@ export default {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
   },
+  created: {},
 };
 </script>
 
