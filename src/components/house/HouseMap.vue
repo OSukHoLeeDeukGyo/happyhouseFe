@@ -2,57 +2,75 @@
   <b-container class="bv-example-row">
     <div id="map"></div>
     <div class="button-group">
-      <button @click="changeSize(0)">Hide</button>
-      <button @click="changeSize(400)">show</button>
-      <button @click="displayMarker(markerPositions1)">marker set 1</button>
-      <button @click="displayMarker(markerPositions2)">marker set 2</button>
-      <button @click="displayMarker([])">marker set 3 (empty)</button>
+      <button @click="emptyMarkers">마커 지우기</button>
       <button @click="displayInfoWindow">infowindow</button>
     </div>
-    <b-form-select v-model="currentGu" :options="options"></b-form-select>
+    <b-form-select
+      @change="setCurrentGu"
+      v-model="currentGu"
+      :options="options"
+    ></b-form-select>
     <div class="hAddr">
       <button @click="getCurrentGu">현재 구 불러오기</button>
       <span id="centerAddr">{{ currentGu }}</span>
     </div>
+    <div class="popuparea">
+      <house-list
+        v-if="guSelected"
+        @isGuSelected="isGuSelected"
+        class="popup"
+      ></house-list>
+      <house-detail
+        v-if="aptSelected"
+        @isAptSelected="isAptSelected"
+        class="popup"
+      ></house-detail>
+    </div>
   </b-container>
 </template>
 <script>
-import axios from "axios";
+//import axios from "axios";
 import http from "@/api/http";
+import HouseDetail from "@/components/house/HouseDetail.vue";
+import HouseList from "@/components/house/HouseList.vue";
+import { mapMutations } from "vuex";
+import { mapState } from "vuex";
 export default {
   name: "HouseMap",
-  components: {},
+  components: {
+    HouseDetail,
+    HouseList,
+  },
   data() {
     return {
       currentGu: null,
+      currentDong: null,
+      aptListCenter: null,
       guList: [],
       options: [],
-      markerPositions1: [
-        [33.452278, 126.567803],
-        [33.452671, 126.574792],
-        [33.451744, 126.572441],
-      ],
-      markerPositions2: [
-        [37.499590490909185, 127.0263723554437],
-        [37.499427948430814, 127.02794423197847],
-        [37.498553760499505, 127.02882598822454],
-        [37.497625593121384, 127.02935713582038],
-        [37.49629291770947, 127.02587362608637],
-        [37.49754540521486, 127.02546694890695],
-        [37.49646391248451, 127.02675574250912],
-      ],
       markers: [],
+      aptSelected: false,
+      guSelected: false,
       infowindow: null,
       geocoder: null,
       map: null,
     };
   },
   computed: {
-    // houses() {
-    //   return this.$store.state.houses;
-    // },
+    ...mapState("houseStore", ["house", "houselist"]),
   },
   methods: {
+    isAptSelected() {
+      this.aptSelected = false;
+    },
+    isGuSelected() {
+      this.guSelected = false;
+    },
+    ...mapMutations("houseStore", [
+      "SET_DETAIL_HOUSE",
+      "SET_HOUSE_DEALS",
+      "SET_HOUSE_LIST",
+    ]),
     initMap() {
       const container = document.getElementById("map");
       const options = {
@@ -60,93 +78,86 @@ export default {
         level: 4,
       };
 
-      //지도 객체를 등록합니다.
-      //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
       this.map = new kakao.maps.Map(container, options);
       this.geocoder = new kakao.maps.services.Geocoder();
+      //빈곳 클릭시 팝업 제거
       // kakao.maps.event.addListener(this.map, "idle", () => {
       //   this.searchAddrFromCoords(this.map.getCenter(), this.displayCenterInfo);
       // });
     },
-    changeSize(size) {
-      const container = document.getElementById("map");
-      container.style.width = `${size}px`;
-      container.style.height = `${size}px`;
-      this.map.relayout();
-    },
-    getPositions() {
-      //현재 구의 아파트
-      const SERVICE_KEY = process.env.VUE_APP_SERVICE_KEY;
-      // const SERVICE_KEY =
-      //   "9Xo0vlglWcOBGUDxH8PPbuKnlBwbWU6aO7%2Bk3FV4baF9GXok1yxIEF%2BIwr2%2B%2F%2F4oVLT8bekKU%2Bk9ztkJO0wsBw%3D%3D";
-      const SERVICE_URL =
-        "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTrade";
-
-      let gu;
-      console.log("currentgu: " + this.currentGu);
-
-      this.guList.forEach((data) => {
-        if (data.gugunName == this.currentGu) {
-          gu = data.gugunCode;
-        }
-      });
-      console.log("gucode : " + gu);
-      const params = {
-        LAWD_CD: gu,
-        DEAL_YMD: "201512",
-        serviceKey: decodeURIComponent(SERVICE_KEY),
-      };
-
-      axios
-        .get(SERVICE_URL, {
-          params,
-        })
-        .then((response) => {
-          console.log(response.data);
-          //this.aptList = response.data.response.body.items.item;
-        })
-        .catch((error) => {
-          console.dir(error);
+    async getPositions() {
+      let gu; //현재 구 코드
+      if (this.currentGu != null) {
+        this.guList.forEach((data) => {
+          if (data.gugunName == this.currentGu) {
+            gu = data.gugunCode;
+          }
         });
+        console.log("currentgu: " + gu);
+
+        await http
+          .get(`/map/guApt`, {
+            params: {
+              gu: gu,
+            },
+          })
+          .then(({ data }) => {
+            this.houselist = data;
+
+            console.log(this.houselist);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+      await this.getHouseList(gu);
+      this.getAptListCenter();
+      this.aptListToMarkers();
     },
-    displayMarker(markerPositions) {
-      //마커 없애기
-      if (this.markers.length > 0) {
-        this.markers.forEach((marker) => marker.setMap(null));
-      }
-
-      const positions = markerPositions.map(
-        (position) => new kakao.maps.LatLng(...position),
-      );
-
-      if (positions.length > 0) {
-        this.markers = positions.map((position) => {
-          const marker = new kakao.maps.Marker({
-            map: this.map,
-            position,
-            //clickable: true, // 마커를 클릭했을 때 지도의 클릭 이벤트가 발생하지 않도록 설정합니다
-          });
-          kakao.maps.event.addListener(marker, "click", function () {
-            //클릭이벤트
-            console.log("clicked");
-            //this.infowindow.open(this.map, this.marker);
-          });
-        });
-
-        const bounds = positions.reduce(
-          (bounds, latlng) => bounds.extend(latlng),
-          new kakao.maps.LatLngBounds(),
-        );
-
-        this.map.setBounds(bounds);
-      }
+    async setCurrentGu() {
+      this.getPositions();
     },
     async getCurrentGu() {
       await this.searchAddrFromCoords(
         this.map.getCenter(),
         this.displayCenterInfo,
       );
-      console.log("여기", this.currentGu);
+    },
+    getAptListCenter() {
+      let maxLng = 0;
+      let minLng = 180;
+      let maxLat = 0;
+      let minLat = 180;
+      this.houselist.forEach((apt) => {
+        if (maxLat < apt.lat) maxLat = apt.lat;
+
+        if (minLat > apt.lat) minLat = apt.lat;
+        if (maxLng < apt.lng) maxLng = apt.lng;
+        if (minLng > apt.lng) minLng = apt.lng;
+      });
+      this.aptListCenter = {
+        lngCenter: (parseFloat(maxLng) + parseFloat(minLng)) / 2,
+        latCenter: (parseFloat(maxLat) + parseFloat(minLat)) / 2,
+      };
+      this.panTo();
+      //지도 범위조정
+      /* let sw = new kakao.maps.LatLng(minLat, minLng),
+        ne = new kakao.maps.LatLng(maxLat, maxLng);
+      console.log(sw);
+      let bounds = kakao.maps.LatLngBounds(sw, ne);
+      this.map.setBounds(bounds);*/
+    },
+    panTo() {
+      console.log(this.aptListCenter.lngCenter);
+      // 이동할 위도 경도 위치를 생성합니다
+      var moveLatLon = new kakao.maps.LatLng(
+        this.aptListCenter.latCenter,
+        this.aptListCenter.lngCenter,
+      );
+
+      // 지도 중심을 부드럽게 이동시킵니다
+      // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
+      this.map.panTo(moveLatLon);
     },
     async searchAddrFromCoords(coords, callback) {
       // 좌표로 행정동 주소 정보를 요청합니다
@@ -155,6 +166,38 @@ export default {
         coords.getLat(),
         callback,
       );
+    },
+    emptyMarkers() {
+      //마커 초기화
+      if (this.markers.length > 0) {
+        this.markers.forEach((marker) => marker.setMap(null));
+      }
+    },
+    aptListToMarkers() {
+      //aptList로 마커 생성하는 함수
+
+      this.emptyMarkers();
+      //this aptList 에 있는 아파트 정보로 마커 생성
+      for (let i = 0; i < this.houselist.length; i++) {
+        let marker = new kakao.maps.Marker({
+          map: this.map,
+          position: new kakao.maps.LatLng(
+            this.houselist[i].lat,
+            this.houselist[i].lng,
+          ),
+          title: this.houselist[i].aptCode,
+        });
+        kakao.maps.event.addListener(marker, "click", () => {
+          //클릭이벤트 추가
+          this.aptSelected = true;
+          //console.log(marker);
+          this.getHouseInfo(marker.getTitle());
+          this.getHouseDeals(marker.getTitle());
+          //console.log(this.housedeals);
+        });
+        //마커 넣기
+        this.markers.push(marker);
+      }
     },
     displayCenterInfo(result, status) {
       if (status === kakao.maps.services.Status.OK) {
@@ -171,7 +214,7 @@ export default {
         //console.log(result);
         //infoDiv.innerHTML = result[0].region_2depth_name;
         this.currentGu = result[0].region_2depth_name;
-        console.log("와우", this.currentGu);
+        this.currentDong = result[0].region_3depth_name;
         this.getPositions();
       }
     },
@@ -195,6 +238,49 @@ export default {
 
       this.map.setCenter(iwPosition);
     },
+    async getHouseList(guCode) {
+      console.log("gethouselist :" + guCode);
+      await http
+        .get(`/map/guApt`, {
+          params: {
+            gu: guCode,
+          },
+        })
+        .then(({ data }) => {
+          this.SET_HOUSE_LIST(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    async getHouseInfo(aptCode) {
+      await http
+        .get(`/map/aptDetail`, {
+          params: {
+            aptCode: aptCode,
+          },
+        })
+        .then(({ data }) => {
+          this.SET_DETAIL_HOUSE(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getHouseDeals(aptCode) {
+      http
+        .get(`/map/aptDeals`, {
+          params: {
+            aptCode: aptCode,
+          },
+        })
+        .then(({ data }) => {
+          this.SET_HOUSE_DEALS(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -216,18 +302,13 @@ export default {
         },
       })
       .then(({ data }) => {
-        //console.log(data);
         this.guList = data;
         for (let i = 0; i < data.length; i++) {
           this.options.push(new Object());
           this.options[i].value = data[i].gugunName;
           this.options[i].text = data[i].gugunName;
         }
-        //this.options.value = data.gugunName;
         console.log(this.guList);
-
-        // console.log(commit, response);
-        //commit("SET_GUGUN_LIST", data);
       })
       .catch((error) => {
         console.log(error);
@@ -240,5 +321,17 @@ export default {
 #map {
   width: 100%;
   height: 600px;
+}
+.popuparea {
+  height: 100%;
+  position: absolute;
+  top: 0;
+}
+.popup {
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 1;
+  width: 300px;
+  height: 100%;
+  position: relative;
 }
 </style>

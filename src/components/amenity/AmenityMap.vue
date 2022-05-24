@@ -298,14 +298,13 @@ export default {
         "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTrade";
 
       let gu;
-      console.log("currentgu: " + this.currentGu);
 
       this.guList.forEach((data) => {
         if (data.gugunName == this.currentGu) {
           gu = data.gugunCode;
         }
       });
-      console.log("gucode : " + gu);
+
       const params = {
         LAWD_CD: gu,
         DEAL_YMD: "201512",

@@ -3,13 +3,14 @@
     <b-td>{{ articleno }}</b-td>
     <b-th class="text-left">
       <router-link
-        :to="{ name: 'boardDetail', params: { articleno: articleno } }"
+        :to="{ name: 'qnaDetail', params: { articleno: articleno } }"
         >{{ subject }}</router-link
       >
     </b-th>
-    <b-td>{{ hit }}</b-td>
+    <b-td>{{ reply ? "O" : "X" }}</b-td>
     <b-td>{{ userid }}</b-td>
     <b-td>{{ regtime | dateFormat }}</b-td>
+    <b-td>{{ hit }}</b-td>
   </b-tr>
 </template>
 
@@ -17,13 +18,14 @@
 import moment from "moment";
 
 export default {
-  name: "BoardListItem",
+  name: "QnaListItem",
   props: {
     articleno: Number,
     userid: String,
     subject: String,
     hit: Number,
     regtime: String,
+    reply: String,
   },
   filters: {
     dateFormat(regtime) {

@@ -5,17 +5,17 @@
         <b-alert show><h3>글작성</h3></b-alert>
       </b-col>
     </b-row>
-    <board-input-item type="register" />
+    <qna-input-item type="register" />
   </b-container>
 </template>
 
 <script>
-import BoardInputItem from "@/components/board/item/BoardInputItem.vue";
+import QnaInputItem from "@/components/qna/item/QnaInputItem.vue";
 
 export default {
-  name: "BoardWrite",
+  name: "QnaWrite",
   components: {
-    BoardInputItem,
+    QnaInputItem,
   },
 };
 </script>

@@ -1,6 +1,5 @@
 import jwt_decode from "jwt-decode";
-import { login } from "@/api/member.js";
-import { findById } from "../../api/member";
+import { login, findById } from "@/api/member";
 
 const memberStore = {
   namespaced: true,
@@ -59,6 +58,9 @@ const memberStore = {
           console.log(error);
         },
       );
+    },
+    setUserInfo({ commit }, userinfo) {
+      commit("SET_USER_INFO", userinfo);
     },
   },
 };

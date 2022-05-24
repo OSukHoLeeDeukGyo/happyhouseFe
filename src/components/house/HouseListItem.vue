@@ -21,9 +21,7 @@
 
 <script>
 import { mapActions } from "vuex";
-
-const houseStore = "houseStore";
-
+import { mapState } from "vuex";
 export default {
   name: "HouseListItem",
   data() {
@@ -34,10 +32,16 @@ export default {
   props: {
     house: Object,
   },
+  computed: {
+    ...mapState("houseStore", ["house"]),
+    // houses() {
+    //   return this.$store.state.houses;
+    // },
+  },
   methods: {
-    ...mapActions(houseStore, ["detailHouse"]),
+    ...mapActions(["detailHouse"]),
     selectHouse() {
-      // console.log("listRow : ", this.house);
+      console.log("listRow : ", this.house);
       // this.$store.dispatch("getHouse", this.house);
       this.detailHouse(this.house);
     },

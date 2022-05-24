@@ -18,9 +18,7 @@ const onlyAuthUser = async (to, from, next) => {
   if (checkUserInfo === null) {
     alert("로그인이 필요한 페이지입니다..");
     next({ name: "signIn" });
-    // router.push({ name: "signIn" });
   } else {
-    // console.log("로그인 했다.");
     next();
   }
 };
@@ -42,7 +40,7 @@ const routes = [
         component: () => import("@/components/user/MemberLogin.vue"),
       },
       {
-        path: "singup",
+        path: "signup",
         name: "signUp",
         component: () => import("@/components/user/MemberRegister.vue"),
       },
@@ -52,36 +50,77 @@ const routes = [
         beforeEnter: onlyAuthUser,
         component: () => import("@/components/user/MemberMyPage.vue"),
       },
+      {
+        path: "infomodify",
+        name: "infoModify",
+        component: () => import("@/components/user/MemberModify.vue"),
+      },
+      {
+        path: "accountdelete",
+        name: "accountDelete",
+        component: () => import("@/components/user/MemberDelete.vue"),
+      },
     ],
   },
   {
-    path: "/board",
-    name: "board",
-    component: () => import("@/views/BoardView.vue"),
-    redirect: "/board/list",
+    path: "/notice",
+    name: "notice",
+    component: () => import("@/views/NoticeView.vue"),
+    redirect: "/notice/list",
     children: [
       {
         path: "list",
-        name: "boardList",
-        component: () => import("@/components/board/BoardList.vue"),
+        name: "noticeList",
+        component: () => import("@/components/notice/NoticeList.vue"),
       },
       {
         path: "write",
-        name: "boardRegister",
+        name: "noticeRegister",
         beforeEnter: onlyAuthUser,
-        component: () => import("@/components/board/BoardRegister.vue"),
+        component: () => import("@/components/notice/NoticeRegister.vue"),
       },
       {
         path: "detail/:articleno",
-        name: "boardDetail",
+        name: "noticeDetail",
         beforeEnter: onlyAuthUser,
-        component: () => import("@/components/board/BoardDetail.vue"),
+        component: () => import("@/components/notice/NoticeDetail.vue"),
       },
       {
         path: "modify/:articleno",
-        name: "boardModify",
+        name: "noticeModify",
         beforeEnter: onlyAuthUser,
-        component: () => import("@/components/board/BoardModify.vue"),
+        component: () => import("@/components/notice/NoticeModify.vue"),
+      },
+    ],
+  },
+  {
+    path: "/qna",
+    name: "qna",
+    component: () => import("@/views/QnaView.vue"),
+    redirect: "/qna/list",
+    children: [
+      {
+        path: "list",
+        name: "qnaList",
+        component: () => import("@/components/qna/QnaList.vue"),
+      },
+      {
+        path: "write",
+        name: "qnaRegister",
+        beforeEnter: onlyAuthUser,
+        component: () => import("@/components/qna/QnaRegister.vue"),
+      },
+      {
+        path: "detail/:articleno",
+        name: "qnaDetail",
+        beforeEnter: onlyAuthUser,
+        component: () => import("@/components/qna/QnaDetail.vue"),
+      },
+      {
+        path: "modify/:articleno",
+        name: "qnaModify",
+        beforeEnter: onlyAuthUser,
+        component: () => import("@/components/qna/QnaModify.vue"),
       },
     ],
   },

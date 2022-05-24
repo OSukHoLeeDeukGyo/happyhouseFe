@@ -2,7 +2,7 @@
   <b-container class="bv-example-row mt-3">
     <b-row>
       <b-col>
-        <b-alert variant="secondary" show><h3>회원가입</h3></b-alert>
+        <b-alert variant="secondary" show><h3>회원정보수정</h3></b-alert>
       </b-col>
     </b-row>
     <b-row>
@@ -15,29 +15,26 @@
                 v-model="user.userid"
                 required
                 placeholder="아이디"
-                @blur="idChk"
+                readonly
               />
-              <p class="idchkmsg" v-if="user.userid && !idValidate">
-                이미 존재하는 아이디입니다.
-              </p>
             </b-form-group>
-            <b-form-group label="비밀번호:" label-for="userpwd">
+            <b-form-group label="새로운 비밀번호:" label-for="userpwd">
               <b-form-input
                 type="password"
                 id="userpwd"
                 v-model="user.userpwd"
                 required
-                placeholder="비밀번호"
+                placeholder="새로운 비밀번호"
                 @blur="pwdChk"
               ></b-form-input>
             </b-form-group>
-            <b-form-group label="비밀번호확인:" label-for="userpwdchk">
+            <b-form-group label="새로운 비밀번호 확인:" label-for="userpwdchk">
               <b-form-input
                 type="password"
                 id="userpwdchk"
                 v-model="user.userpwdchk"
                 required
-                placeholder="비밀번호체크"
+                placeholder="비밀번호 확인"
                 @blur="pwdChk"
               ></b-form-input>
               <p class="pwdchkmsg" v-if="user.userpwdchk && !pwdValidate">
@@ -68,15 +65,15 @@
               type="button"
               variant="primary"
               class="m-1"
-              @click="signUp"
-              >회원가입</b-button
+              @click="goModify"
+              >정보수정</b-button
             >
             <b-button
               type="button"
               variant="success"
               class="m-1"
-              @click="goHome"
-              >로그인화면</b-button
+              @click="goInfo"
+              >돌아가기</b-button
             >
           </b-form>
         </b-card>
@@ -87,7 +84,9 @@
 
 <script>
 import http from "@/api/http";
-import { chkId } from "@/api/member";
+import { mapState, mapActions } from "vuex";
+
+const memberStore = "memberStore";
 
 export default {
   name: "MemberRegister",
@@ -100,36 +99,25 @@ export default {
         username: "",
         email: "",
       },
-      idValidate: true,
       pwdValidate: true,
     };
   },
+  created() {
+    this.user.userid = this.userInfo.userid;
+    this.user.username = this.userInfo.username;
+    this.user.email = this.userInfo.email;
+  },
+  computed: {
+    ...mapState(memberStore, ["userInfo"]),
+  },
   methods: {
-    idChk() {
-      if (!this.user.userid) return;
-      chkId(
-        this.user.userid,
-        (response) => {
-          console.log(response);
-          if (response.data === "success") this.idValidate = false;
-          else this.idValidate = true;
-        },
-        () => {},
-      );
-    },
+    ...mapActions(memberStore, ["setUserInfo"]),
     pwdChk() {
       if (this.user.userpwd === this.user.userpwdchk) this.pwdValidate = true;
       else this.pwdValidate = false;
     },
-    signUp() {
-      if (this.user.userid == "") {
-        alert("아이디를 입력하세요.");
-        return;
-      }
-      if (!this.idValidate) {
-        alert("아이디를 확인하세요.");
-        return;
-      }
+    goModify() {
+      console.log(this.user);
       if (this.user.userpwd == "") {
         alert("비밀번호를 입력하세요.");
         return;
@@ -152,7 +140,7 @@ export default {
       }
 
       http
-        .post("/user/signup", {
+        .put("/user/update", {
           userid: this.user.userid,
           userpwd: this.user.userpwd,
           username: this.user.username,
@@ -160,34 +148,38 @@ export default {
         })
         .then((response) => {
           if (response.data == "success") {
-            alert("성공적으로 가입 하였습니다. 로그인 하십시오.");
-            this.$router.push({ name: "signIn" });
+            this.setUserInfo({
+              ...this.userInfo,
+              username: this.user.username,
+              email: this.user.email,
+            });
+            alert("성공적으로 개인정보를 수정했습니다.");
+            this.$router.push({ name: "mypage" });
           } else {
-            alert("오류가 생겨 가입을 하지 못했습니다.");
+            alert("오류가 생겨 정보수정에 실패했습니다. 다시 시도해보세요!");
             this.clearInput();
           }
         })
         .catch(() => {
-          alert("오류가 생겨 가입을 하지 못했습니다.");
+          alert("오류가 생겨 정보수정에 실패했습니다. 다시 시도해보세요!");
           this.clearInput();
         });
     },
     clearInput() {
-      this.user.userid = "";
+      this.user.userid = this.userInfo.userid;
+      this.user.username = this.userInfo.username;
+      this.user.email = this.userInfo.email;
       this.user.userpwd = "";
       this.user.userpwdchk = "";
-      this.user.username = "";
-      this.user.email = "";
     },
-    goHome() {
-      this.$router.push({ name: "signIn" });
+    goInfo() {
+      this.$router.push({ name: "mypage" });
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.idchkmsg,
 .pwdchkmsg {
   color: red;
 }
