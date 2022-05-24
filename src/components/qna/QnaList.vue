@@ -29,9 +29,10 @@
             <b-tr>
               <b-th>글번호</b-th>
               <b-th>제목</b-th>
-              <b-th>조회수</b-th>
+              <b-th>답변여부</b-th>
               <b-th>작성자</b-th>
               <b-th>작성일</b-th>
+              <b-th>조회수</b-th>
             </b-tr>
           </b-thead>
           <tbody>
@@ -44,7 +45,10 @@
           </tbody>
         </b-table-simple>
       </b-col>
-      <b-col v-else class="text-center">작성된 Q&A 없습니다.</b-col>
+      <b-col v-else class="text-center">
+        <hr />
+        작성된 Q&A가 없습니다.</b-col
+      >
     </b-row>
   </b-container>
 </template>

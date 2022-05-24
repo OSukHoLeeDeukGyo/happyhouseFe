@@ -122,12 +122,6 @@ const routes = [
         beforeEnter: onlyAuthUser,
         component: () => import("@/components/qna/QnaModify.vue"),
       },
-      {
-        path: "modify/:articleno",
-        name: "qnaReplyModify",
-        beforeEnter: onlyAuthUser,
-        component: () => import("@/components/qna/QnaReplyModify.vue"),
-      },
     ],
   },
   {

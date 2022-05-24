@@ -7,9 +7,10 @@
         >{{ subject }}</router-link
       >
     </b-th>
-    <b-td>{{ hit }}</b-td>
+    <b-td>{{ reply ? "O" : "X" }}</b-td>
     <b-td>{{ userid }}</b-td>
     <b-td>{{ regtime | dateFormat }}</b-td>
+    <b-td>{{ hit }}</b-td>
   </b-tr>
 </template>
 
@@ -24,6 +25,7 @@ export default {
     subject: String,
     hit: Number,
     regtime: String,
+    reply: String,
   },
   filters: {
     dateFormat(regtime) {

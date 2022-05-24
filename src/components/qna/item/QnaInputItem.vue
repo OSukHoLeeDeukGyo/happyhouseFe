@@ -2,28 +2,17 @@
   <b-row class="mb-1">
     <b-col style="text-align: left">
       <b-form @submit="onSubmit" @reset="onReset">
-        <b-form-group
-          id="userid-group"
-          label="작성자:"
-          label-for="userid"
-          description="작성자를 입력하세요."
-        >
+        <b-form-group id="userid-group" label="작성자:" label-for="userid">
           <b-form-input
             id="userid"
             :disabled="isUserid"
             v-model="article.userid"
             type="text"
-            required
-            placeholder="작성자 입력..."
+            readonly
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group
-          id="subject-group"
-          label="제목:"
-          label-for="subject"
-          description="제목을 입력하세요."
-        >
+        <b-form-group id="subject-group" label="제목:" label-for="subject">
           <b-form-input
             id="subject"
             v-model="article.subject"
@@ -61,6 +50,9 @@
 
 <script>
 import http from "@/api/http";
+import { mapState } from "vuex";
+
+const memberStore = "memberStore";
 
 export default {
   name: "QnaInputItem",
@@ -78,7 +70,11 @@ export default {
   props: {
     type: { type: String },
   },
+  computed: {
+    ...mapState(memberStore, ["userInfo"]),
+  },
   created() {
+    this.article.userid = this.userInfo.userid;
     if (this.type === "modify") {
       http.get(`/qna/${this.$route.params.articleno}`).then(({ data }) => {
         // this.article.articleno = data.article.articleno;
