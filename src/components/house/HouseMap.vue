@@ -14,28 +14,35 @@
       <button @click="getCurrentGu">현재 구 불러오기</button>
       <span id="centerAddr">{{ currentGu }}</span>
     </div>
-
-    <house-detail
-      v-if="aptSelected"
-      :currentApt="currentApt"
-      @isAptSelected="isAptSelected"
-    ></house-detail>
+    <div class="popuparea">
+      <house-list
+        v-if="guSelected"
+        @isGuSelected="isGuSelected"
+        class="popup"
+      ></house-list>
+      <house-detail
+        v-if="aptSelected"
+        @isAptSelected="isAptSelected"
+        class="popup"
+      ></house-detail>
+    </div>
   </b-container>
 </template>
 <script>
 //import axios from "axios";
 import http from "@/api/http";
 import HouseDetail from "@/components/house/HouseDetail.vue";
-import { mapActions, mapMutations } from "vuex";
+import HouseList from "@/components/house/HouseList.vue";
+import { mapMutations } from "vuex";
 import { mapState } from "vuex";
 export default {
   name: "HouseMap",
   components: {
     HouseDetail,
+    HouseList,
   },
   data() {
     return {
-      aptList: [],
       currentGu: null,
       currentDong: null,
       aptListCenter: null,
@@ -43,25 +50,27 @@ export default {
       options: [],
       markers: [],
       aptSelected: false,
-      currentApt: null,
+      guSelected: false,
       infowindow: null,
       geocoder: null,
       map: null,
     };
   },
   computed: {
-    ...mapState("houseStore", ["house", "housedeals"]),
-    //...mapMutations(["SET_DETAIL_HOUSE"]),
-    // houses() {
-    //   return this.$store.state.houses;
-    // },
+    ...mapState("houseStore", ["house", "houselist"]),
   },
   methods: {
     isAptSelected() {
       this.aptSelected = false;
     },
-    ...mapActions("houseStore", ["detailHouse", "houseDeals"]),
-    ...mapMutations("houseStore", ["SET_DETAIL_HOUSE", "SET_HOUSE_DEALS"]),
+    isGuSelected() {
+      this.guSelected = false;
+    },
+    ...mapMutations("houseStore", [
+      "SET_DETAIL_HOUSE",
+      "SET_HOUSE_DEALS",
+      "SET_HOUSE_LIST",
+    ]),
     initMap() {
       const container = document.getElementById("map");
       const options = {
@@ -69,38 +78,14 @@ export default {
         level: 4,
       };
 
-      //지도 객체를 등록합니다.
-      //지도 객체는 반응형 관리 대상이 아니므로 initMap에서 선언합니다.
       this.map = new kakao.maps.Map(container, options);
       this.geocoder = new kakao.maps.services.Geocoder();
+      //빈곳 클릭시 팝업 제거
       // kakao.maps.event.addListener(this.map, "idle", () => {
       //   this.searchAddrFromCoords(this.map.getCenter(), this.displayCenterInfo);
       // });
     },
     async getPositions() {
-      //현재 구의 아파트
-      /*const SERVICE_KEY = process.env.VUE_APP_SERVICE_KEY;
-      const SERVICE_URL =
-        "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTrade";
-
-      const params = {
-        LAWD_CD: gu,
-        DEAL_YMD: "201512",
-        serviceKey: decodeURIComponent(SERVICE_KEY),
-      };
-
-      await axios
-        .get(SERVICE_URL, {
-          params,
-        })
-        .then((response) => {
-          console.log(response.data.response.body.items.item);
-          this.aptList = response.data.response.body.items.item;
-          this.aptListToMarkers();
-        })
-        .catch((error) => {
-          console.dir(error);
-        });*/
       let gu; //현재 구 코드
       if (this.currentGu != null) {
         this.guList.forEach((data) => {
@@ -117,16 +102,17 @@ export default {
             },
           })
           .then(({ data }) => {
-            this.aptList = data;
+            this.houselist = data;
 
-            console.log(this.aptList);
+            console.log(this.houselist);
           })
           .catch((error) => {
             console.log(error);
           });
-        this.getAptListCenter();
-        this.aptListToMarkers();
       }
+      await this.getHouseList(gu);
+      this.getAptListCenter();
+      this.aptListToMarkers();
     },
     async setCurrentGu() {
       this.getPositions();
@@ -142,20 +128,19 @@ export default {
       let minLng = 180;
       let maxLat = 0;
       let minLat = 180;
-      this.aptList.forEach((apt) => {
+      this.houselist.forEach((apt) => {
         if (maxLat < apt.lat) maxLat = apt.lat;
 
         if (minLat > apt.lat) minLat = apt.lat;
         if (maxLng < apt.lng) maxLng = apt.lng;
         if (minLng > apt.lng) minLng = apt.lng;
       });
-      //console.log(maxLng, minLng);
-      //console.log(maxLat, minLat);
       this.aptListCenter = {
         lngCenter: (parseFloat(maxLng) + parseFloat(minLng)) / 2,
         latCenter: (parseFloat(maxLat) + parseFloat(minLat)) / 2,
       };
       this.panTo();
+      //지도 범위조정
       /* let sw = new kakao.maps.LatLng(minLat, minLng),
         ne = new kakao.maps.LatLng(maxLat, maxLng);
       console.log(sw);
@@ -193,14 +178,14 @@ export default {
 
       this.emptyMarkers();
       //this aptList 에 있는 아파트 정보로 마커 생성
-      for (let i = 0; i < this.aptList.length; i++) {
+      for (let i = 0; i < this.houselist.length; i++) {
         let marker = new kakao.maps.Marker({
           map: this.map,
           position: new kakao.maps.LatLng(
-            this.aptList[i].lat,
-            this.aptList[i].lng,
+            this.houselist[i].lat,
+            this.houselist[i].lng,
           ),
-          title: this.aptList[i].aptCode,
+          title: this.houselist[i].aptCode,
         });
         kakao.maps.event.addListener(marker, "click", () => {
           //클릭이벤트 추가
@@ -212,29 +197,7 @@ export default {
         });
         //마커 넣기
         this.markers.push(marker);
-
-        /*
-        //주소로 좌표얻기
-        this.geocoder.addressSearch(`${dong} ${jibun}`, (result, status) => {
-          // 정상적으로 검색이 완료됐으면
-          if (status === kakao.maps.services.Status.OK) {
-            //마커 객체 생성
-            let marker = new kakao.maps.Marker({
-              map: this.map,
-              position: new kakao.maps.LatLng(result[0].y, result[0].x),
-              title: this.aptList[i]["아파트"],
-            });
-            kakao.maps.event.addListener(marker, "click", function () {
-              //클릭이벤트
-              console.log(marker.getTitle());
-            });
-            //마커 넣기
-            this.markers.push(marker);
-          }
-        });*/
       }
-
-      //happyhouse db사용시 aptList에 lng lat 정보까지 포함
     },
     displayCenterInfo(result, status) {
       if (status === kakao.maps.services.Status.OK) {
@@ -275,19 +238,30 @@ export default {
 
       this.map.setCenter(iwPosition);
     },
-    getHouseInfo(aptCode) {
-      http
+    async getHouseList(guCode) {
+      console.log("gethouselist :" + guCode);
+      await http
+        .get(`/map/guApt`, {
+          params: {
+            gu: guCode,
+          },
+        })
+        .then(({ data }) => {
+          this.SET_HOUSE_LIST(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    async getHouseInfo(aptCode) {
+      await http
         .get(`/map/aptDetail`, {
           params: {
             aptCode: aptCode,
           },
         })
         .then(({ data }) => {
-          //console.log(data);
-          //this.detailHouse(data);
           this.SET_DETAIL_HOUSE(data);
-          // console.log(commit, response);
-          //commit("SET_GUGUN_LIST", data);
         })
         .catch((error) => {
           console.log(error);
@@ -302,14 +276,6 @@ export default {
         })
         .then(({ data }) => {
           this.SET_HOUSE_DEALS(data);
-          //console.log(data);
-          //this.houseDeals = data;
-
-          //this.options.value = data.gugunName;
-          //console.log(this.aptDeals);
-
-          //console.log(data);
-          //commit("SET_GUGUN_LIST", data);
         })
         .catch((error) => {
           console.log(error);
@@ -336,18 +302,13 @@ export default {
         },
       })
       .then(({ data }) => {
-        //console.log(data);
         this.guList = data;
         for (let i = 0; i < data.length; i++) {
           this.options.push(new Object());
           this.options[i].value = data[i].gugunName;
           this.options[i].text = data[i].gugunName;
         }
-        //this.options.value = data.gugunName;
         console.log(this.guList);
-
-        // console.log(commit, response);
-        //commit("SET_GUGUN_LIST", data);
       })
       .catch((error) => {
         console.log(error);
@@ -360,5 +321,17 @@ export default {
 #map {
   width: 100%;
   height: 600px;
+}
+.popuparea {
+  height: 100%;
+  position: absolute;
+  top: 0;
+}
+.popup {
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 1;
+  width: 300px;
+  height: 100%;
+  position: relative;
 }
 </style>
