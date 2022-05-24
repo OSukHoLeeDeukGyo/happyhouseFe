@@ -39,17 +39,21 @@
         >
       </b-col>
     </b-row>
+    <line-chart />
   </b-container>
 </template>
 
 <script>
 import { mapState } from "vuex";
+import LineChart from "@/components/house/HouseChart.vue";
 //import http from "@/api/http";
 export default {
   name: "HouseDetail",
   data() {
     return {};
   },
+
+  components: { LineChart },
   props: { currentApt: String, aptSelected: Boolean },
   methods: {
     close() {

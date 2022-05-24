@@ -11,7 +11,7 @@ const houseStore = {
     housedeals: [],
   },
 
-  getters: {},
+  getters: { getDeals: (state) => () => state.housedeals },
 
   mutations: {
     SET_SIDO_LIST: (state, sidos) => {
