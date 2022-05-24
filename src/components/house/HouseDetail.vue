@@ -4,14 +4,13 @@
       <b-col><button @click="close">X</button></b-col>
     </b-row>
     <b-row>
-      <b-col
-        ><h3>{{ currentApt }}</h3></b-col
-      >
+      <b-col><h3>{{}}</h3></b-col>
     </b-row>
     <b-row class="mb-2 mt-1">
       <b-col
-        ><b-img :src="require('@/assets/apt.png')" fluid-grow></b-img
-      ></b-col>
+        ><!--<b-img :src="require('@/assets/apt.png')" fluid-grow></b-img
+      >--></b-col
+      >
     </b-row>
     <b-row>
       <b-col>
@@ -20,34 +19,36 @@
     </b-row>
     <b-row>
       <b-col>
-        <b-alert show variant="primary">아파트 이름 : {{}} </b-alert>
+        <b-alert show variant="primary"
+          >아파트 이름 : {{ house.aptName }}
+        </b-alert>
       </b-col>
     </b-row>
     <b-row>
       <b-col>
-        <b-alert show variant="info">법정동 : {{}} </b-alert>
+        <b-alert show variant="info"
+          >주소 : {{ house.dongName }} {{ house.jibun }}</b-alert
+        >
       </b-col>
     </b-row>
     <b-row>
       <b-col>
-        <b-alert show variant="warning">층수 : {{}}층</b-alert>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col>
-        <b-alert show variant="danger">거래금액 : {{}}원</b-alert>
+        <b-alert show variant="danger"
+          >최근 거래금액 :
+          {{ housedeals[housedeals.length - 1].dealAmount }}원</b-alert
+        >
       </b-col>
     </b-row>
   </b-container>
 </template>
 
 <script>
-//import { mapState } from "vuex";
-import http from "@/api/http";
+import { mapState } from "vuex";
+//import http from "@/api/http";
 export default {
   name: "HouseDetail",
   data() {
-    return { aptDeals: [] };
+    return {};
   },
   props: { currentApt: String, aptSelected: Boolean },
   methods: {
@@ -60,7 +61,8 @@ export default {
   },
 
   computed: {
-    //...mapState(["aptCode"]),
+    ...mapState("houseStore", ["house", "housedeals"]),
+
     // house() {
     //   return this.$store.state.house;
     // },
@@ -72,25 +74,8 @@ export default {
     },
   },
   created() {
-    http
-      .get(`/map/aptDeals`, {
-        params: {
-          aptCode: this.currentApt,
-        },
-      })
-      .then(({ data }) => {
-        //console.log(data);
-        this.aptDeals = data;
-
-        //this.options.value = data.gugunName;
-        console.log(this.aptDeals);
-
-        // console.log(commit, response);
-        //commit("SET_GUGUN_LIST", data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    console.log(this.house);
+    console.log(this.housedeals);
   },
 };
 </script>

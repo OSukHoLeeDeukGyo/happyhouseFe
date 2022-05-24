@@ -26,7 +26,8 @@
 //import axios from "axios";
 import http from "@/api/http";
 import HouseDetail from "@/components/house/HouseDetail.vue";
-import { mapActions } from "vuex";
+import { mapActions, mapMutations } from "vuex";
+import { mapState } from "vuex";
 export default {
   name: "HouseMap",
   components: {
@@ -49,6 +50,8 @@ export default {
     };
   },
   computed: {
+    ...mapState("houseStore", ["house", "housedeals"]),
+    //...mapMutations(["SET_DETAIL_HOUSE"]),
     // houses() {
     //   return this.$store.state.houses;
     // },
@@ -57,12 +60,8 @@ export default {
     isAptSelected() {
       this.aptSelected = false;
     },
-    ...mapActions(["detailHouse"]),
-    selectHouse(aptCode) {
-      console.log("marker select : ", aptCode);
-      // this.$store.dispatch("getHouse", this.house);
-      this.detailHouse(aptCode);
-    },
+    ...mapActions("houseStore", ["detailHouse", "houseDeals"]),
+    ...mapMutations("houseStore", ["SET_DETAIL_HOUSE", "SET_HOUSE_DEALS"]),
     initMap() {
       const container = document.getElementById("map");
       const options = {
@@ -103,30 +102,31 @@ export default {
           console.dir(error);
         });*/
       let gu; //현재 구 코드
-
-      this.guList.forEach((data) => {
-        if (data.gugunName == this.currentGu) {
-          gu = data.gugunCode;
-        }
-      });
-      console.log("currentgu: " + gu);
-
-      await http
-        .get(`/map/guApt`, {
-          params: {
-            gu: gu,
-          },
-        })
-        .then(({ data }) => {
-          this.aptList = data;
-
-          console.log(this.aptList);
-        })
-        .catch((error) => {
-          console.log(error);
+      if (this.currentGu != null) {
+        this.guList.forEach((data) => {
+          if (data.gugunName == this.currentGu) {
+            gu = data.gugunCode;
+          }
         });
-      this.getAptListCenter();
-      this.aptListToMarkers();
+        console.log("currentgu: " + gu);
+
+        await http
+          .get(`/map/guApt`, {
+            params: {
+              gu: gu,
+            },
+          })
+          .then(({ data }) => {
+            this.aptList = data;
+
+            console.log(this.aptList);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        this.getAptListCenter();
+        this.aptListToMarkers();
+      }
     },
     async setCurrentGu() {
       this.getPositions();
@@ -156,6 +156,11 @@ export default {
         latCenter: (parseFloat(maxLat) + parseFloat(minLat)) / 2,
       };
       this.panTo();
+      /* let sw = new kakao.maps.LatLng(minLat, minLng),
+        ne = new kakao.maps.LatLng(maxLat, maxLng);
+      console.log(sw);
+      let bounds = kakao.maps.LatLngBounds(sw, ne);
+      this.map.setBounds(bounds);*/
     },
     panTo() {
       console.log(this.aptListCenter.lngCenter);
@@ -199,12 +204,11 @@ export default {
         });
         kakao.maps.event.addListener(marker, "click", () => {
           //클릭이벤트 추가
-
           this.aptSelected = true;
-
-          this.currentApt = marker.getTitle();
-          console.log(this.currentApt, this.aptSelected);
-          //this.selectHouse(marker.getTitle());
+          //console.log(marker);
+          this.getHouseInfo(marker.getTitle());
+          this.getHouseDeals(marker.getTitle());
+          //console.log(this.housedeals);
         });
         //마커 넣기
         this.markers.push(marker);
@@ -270,6 +274,46 @@ export default {
       });
 
       this.map.setCenter(iwPosition);
+    },
+    getHouseInfo(aptCode) {
+      http
+        .get(`/map/aptDetail`, {
+          params: {
+            aptCode: aptCode,
+          },
+        })
+        .then(({ data }) => {
+          //console.log(data);
+          //this.detailHouse(data);
+          this.SET_DETAIL_HOUSE(data);
+          // console.log(commit, response);
+          //commit("SET_GUGUN_LIST", data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getHouseDeals(aptCode) {
+      http
+        .get(`/map/aptDeals`, {
+          params: {
+            aptCode: aptCode,
+          },
+        })
+        .then(({ data }) => {
+          this.SET_HOUSE_DEALS(data);
+          //console.log(data);
+          //this.houseDeals = data;
+
+          //this.options.value = data.gugunName;
+          //console.log(this.aptDeals);
+
+          //console.log(data);
+          //commit("SET_GUGUN_LIST", data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
   mounted() {
