@@ -103,71 +103,8 @@ export default {
       };
     },
   },
-  watch: {
-    /* housedeals: function () {
-      this._chart.destroy();
-      //this.renderChart(this.data, this.options);
-      this.renderLineChart();
-    },*/
-    /*housedeals(newValue, oldValue) {
-      console.log(`Updating from ${oldValue} to ${newValue}`);
-
-      // Do whatever makes sense now
-      this.createChart();
-    },*/
-  },
-  methods: {
-    /*createChart() {
-      if (chart !== undefined) {
-        chart.destroy();
-      }
-      chart = new ChartJS(this.$refs.barChart, {
-        type: "bar",
-        data: this.chartData,
-        options: this.options,
-      });
-
-      let dealdates = [];
-      this.housedeals.forEach((deal) => {
-        dealdates.push(deal.dealYear + deal.dealMonth);
-      });
-
-      let dealamounts = [];
-      this.housedeals.forEach((deal) => {
-        dealamounts.push(parseInt(deal.dealAmount));
-      });
-
-      chart.data.labels = dealdates;
-      chart.data.datasets[0].data[0] = dealamounts;
-      //chart.data.datasets[0].data[1] = this.secondData;
-      chart.update();
-    },*/
-  },
-  async mounted() {
-    /*this.$store.watch(this.$store.getters.getDeals, () => {
-      this.createChart();
-    });*/
-    /*
-    this.loaded = false;
-
-    try {
-      //const { deals } = await fetch("/api/userlist");
-      let dealdates = [];
-      this.housedeals.forEach((deal) => {
-        dealdates.push(deal.dealYear + deal.dealMonth);
-      });
-      this.chartData.labels = dealdates;
-
-      let dealamounts = [];
-      this.housedeals.forEach((deal) => {
-        dealamounts.push(parseInt(deal.dealAmount));
-      });
-      this.chartData.datasets[0].data = dealamounts;
-
-      this.loaded = true;
-    } catch (e) {
-      console.error(e);
-    }*/
-  },
+  watch: {},
+  methods: {},
+  async mounted() {},
 };
 </script>
