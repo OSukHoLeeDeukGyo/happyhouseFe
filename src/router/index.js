@@ -94,6 +94,37 @@ const routes = [
     ],
   },
   {
+    path: "/qna",
+    name: "qna",
+    component: () => import("@/views/QnaView.vue"),
+    redirect: "/qna/list",
+    children: [
+      {
+        path: "list",
+        name: "qnaList",
+        component: () => import("@/components/qna/QnaList.vue"),
+      },
+      {
+        path: "write",
+        name: "qnaRegister",
+        beforeEnter: onlyAuthUser,
+        component: () => import("@/components/qna/QnaRegister.vue"),
+      },
+      {
+        path: "detail/:articleno",
+        name: "qnaDetail",
+        beforeEnter: onlyAuthUser,
+        component: () => import("@/components/qna/QnaDetail.vue"),
+      },
+      {
+        path: "modify/:articleno",
+        name: "qnaModify",
+        beforeEnter: onlyAuthUser,
+        component: () => import("@/components/qna/QnaModify.vue"),
+      },
+    ],
+  },
+  {
     path: "/AmenityView",
     name: "amenity",
     component: () => import("@/views/AmenityView.vue"),

@@ -45,6 +45,12 @@
               TodoList</router-link
             ></b-nav-item
           >
+          <b-nav-item href="#"
+            ><router-link :to="{ name: 'qna' }" class="navItem"
+              ><b-icon icon="calendar-check" font-scale="1.5"></b-icon>
+              Qna</router-link
+            ></b-nav-item
+          >
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto" v-if="userInfo">

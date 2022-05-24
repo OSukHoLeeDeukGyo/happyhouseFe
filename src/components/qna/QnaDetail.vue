@@ -15,9 +15,14 @@
           size="sm"
           @click="moveModifyArticle"
           class="mr-2"
+          v-if="isWriter"
           >글수정</b-button
         >
-        <b-button variant="outline-danger" size="sm" @click="deleteArticle"
+        <b-button
+          variant="outline-danger"
+          size="sm"
+          @click="deleteArticle"
+          v-if="isWriter"
           >글삭제</b-button
         >
       </b-col>
@@ -26,7 +31,7 @@
       <b-col>
         <b-card
           :header-html="`<h3>${article.articleno}.
-          ${article.subject} [${article.hit}]</h3><div><h6>${article.userid}</div><div>${article.regtime}</h6></div>`"
+          ${article.subject}</h3><div><h6>작성자 : ${article.userid}</div><div>${article.regtime}</div><div>조회수 : ${article.hit}</h6></div>`"
           class="mb-2"
           border-variant="dark"
           no-body
@@ -37,127 +42,160 @@
         </b-card>
       </b-col>
     </b-row>
-    <b-row class="mb-1" v-if="article.reply">
+    <hr />
+    <!-- 댓글이 없거나 수정중이면 -->
+    <b-row class="mb-1" v-if="!isReplied || isModifying">
+      <b-col>
+        <b-form @submit="onSubmit">
+          <b-form-group
+            id="userid-group"
+            label="답변 작성자:"
+            label-for="userid"
+          >
+            <b-form-input
+              id="userid"
+              v-model="userInfo.userid"
+              type="text"
+              required
+              readonly
+            ></b-form-input>
+          </b-form-group>
+          <b-form-group id="reply-group" label="답변 내용:" label-for="reply">
+            <b-form-textarea
+              id="reply"
+              v-model="article.reply"
+              placeholder="내용 입력..."
+              rows="3"
+              max-rows="6"
+            ></b-form-textarea>
+          </b-form-group>
+          <b-button type="submit" variant="primary" class="m-1"
+            >답글작성</b-button
+          >
+          <b-button
+            type="button"
+            variant="danger"
+            class="m-1"
+            @click="cancleReply"
+            >취소</b-button
+          >
+        </b-form>
+      </b-col>
+    </b-row>
+    <!-- 댓글이 있으면 -->
+    <b-row class="mb-1" v-if="isReplier && !isModifying">
+      <b-col class="text-right">
+        <b-button
+          variant="outline-info"
+          size="sm"
+          @click="modifyReply"
+          class="mr-2"
+          >답글수정</b-button
+        >
+        <b-button variant="outline-danger" size="sm" @click="deleteReply"
+          >답글삭제</b-button
+        >
+      </b-col>
+    </b-row>
+    <b-row class="mb-1" v-if="isReplied && !isModifying">
       <b-col>
         <b-card
-          :header-html="`<div><h6>admin</h6></div>`"
+          :header-html="`<div><h6>${article.replier}님의 답변</div><div>${article.replyregtime}</h6></div>`"
           class="mb-2"
           border-variant="dark"
           no-body
         >
           <b-card-body class="text-left">
-            <div>{{ article.reply }}</div>
+            <div v-html="replymsg"></div>
           </b-card-body>
         </b-card>
       </b-col>
-    </b-row>
-    <b-row class="mb-1" v-if="isAdmin">
-      <b-form @submit="registReply">
-        <b-form-group id="content-group" label="내용:" label-for="content">
-          <b-form-textarea
-            id="content"
-            v-model="reply"
-            placeholder="내용 입력..."
-            cols="150"
-            rows="10"
-            max-rows="15"
-          ></b-form-textarea>
-        </b-form-group>
-        <b-button type="submit" variant="primary" class="m-1" v-if="!isReply"
-          >답변작성</b-button
-        >
-        <b-button type="submit" variant="primary" class="m-1" v-else
-          >답변수정</b-button
-        >
-        <b-button
-          type="button"
-          variant="danger"
-          class="m-1"
-          @click="deleteReply"
-          >답변삭제</b-button
-        >
-      </b-form>
     </b-row>
   </b-container>
 </template>
 
 <script>
 // import moment from "moment";
+import { getArticle, deleteArticle } from "@/api/qna";
+import { mapState } from "vuex";
 import http from "@/api/http";
+const memberStore = "memberStore";
 
 export default {
   name: "QnaDetail",
   data() {
     return {
       article: {},
-      reply: "",
-      isAdmin: false,
-      isReply: false,
+      isWriter: false,
+      isReplied: false,
+      isReplier: false,
+      isModifying: false,
     };
   },
   computed: {
+    ...mapState(memberStore, ["userInfo"]),
     message() {
       if (this.article.content)
         return this.article.content.split("\n").join("<br>");
       return "";
     },
+    replymsg() {
+      console.log(this.article.reply);
+      if (this.article.reply)
+        return this.article.reply.split("\n").join("<br>");
+      return "";
+    },
   },
   created() {
-    http
-      .get(`/qna/getdetail/${this.$route.params.articleno}`)
-      .then(({ data }) => {
-        this.article = data;
-        if (this.article.reply) this.isReply = true;
-      });
-    if (sessionStorage.getItem("userid") === "admin") this.isAdmin = true;
+    getArticle(
+      this.$route.params.articleno,
+      (response) => {
+        this.article = response.data;
+        http.get(`/qna/hit/${this.article.articleno}`).then(() => {
+          if (this.article.reply) {
+            this.isReplied = true;
+            if (this.article.replier === this.userInfo.userid) {
+              this.isReplier = true;
+            }
+          }
+          if (this.userInfo.userid === this.article.userid) {
+            this.isWriter = true;
+          }
+        });
+      },
+      (error) => {
+        console.log("삭제시 에러발생!!", error);
+      },
+    );
   },
   methods: {
-    registReply(event) {
+    onSubmit(event) {
       event.preventDefault();
-      http
-        .put(`/qna/admin/${this.article.articleno}`, {
-          articleno: this.article.articleno,
-          hit: this.article.hit,
-          regtime: this.article.regtime,
-          userid: this.article.userid,
-          subject: this.article.subject,
-          content: this.article.content,
-          reply: this.reply,
-        })
-        .then(({ data }) => {
-          let msg = "등록 처리시 문제가 발생했습니다.";
-          if (data === "success") {
-            msg = "등록이 완료되었습니다.";
-          }
-          alert(msg);
-          this.$router.push({
-            name: "qnaList",
-          });
-          //location.href = `/qna/detail/${this.article.articleno}`;
-        });
+
+      let err = true;
+      let msg = "";
+      !this.article.content &&
+        ((msg = "답변 내용을 입력해주세요"),
+        (err = false),
+        this.$refs.content.focus());
+
+      if (!err) alert(msg);
+      else this.submitReply();
     },
-    deleteReply() {
+    submitReply() {
       http
-        .put(`/qna/admin/${this.article.articleno}`, {
+        .post(`/qna/reply/${this.article.articleno}`, {
           articleno: this.article.articleno,
-          hit: this.article.hit,
-          regtime: this.article.regtime,
-          userid: this.article.userid,
-          subject: this.article.subject,
-          content: this.article.content,
-          reply: null,
+          replier: this.userInfo.userid,
+          reply: this.article.reply,
         })
         .then(({ data }) => {
-          let msg = "등록 처리시 문제가 발생했습니다.";
+          let msg = "댓글 등록 처리시 문제가 발생했습니다.";
           if (data === "success") {
-            msg = "답변 삭제가 완료되었습니다.";
+            msg = "댓글 등록이 완료되었습니다.";
           }
           alert(msg);
-          this.$router.push({
-            name: "qnaList",
-          });
-          //this.$router.go();
-          //location.href = `/qna/detail/${this.article.articleno}`;
+          location.reload(true);
         });
     },
     listArticle() {
@@ -171,18 +209,31 @@ export default {
       //   this.$router.push({ path: `/qna/modify/${this.article.articleno}` });
     },
     deleteArticle() {
-      if (confirm("정말로 삭제?")) {
-        this.$router.replace({
-          name: "qnaDelete",
-          params: { articleno: this.article.articleno },
+      if (confirm("정말로 글을 삭제하시겠습니까?")) {
+        deleteArticle(this.article.articleno, () => {
+          this.$router.push({ name: "qnaList" });
         });
       }
     },
-    refresh() {
-      this.$router.push({
-        name: "qnaList",
-        params: { articleno: this.article.articleno },
-      });
+    modifyReply() {
+      this.isModifying = true;
+    },
+    cancleReply() {
+      this.isModifying = false;
+    },
+    deleteReply() {
+      if (confirm("정말로 답글을 삭제하시겠습니까?")) {
+        http
+          .delete(`/qna/reply/delete/${this.article.articleno}`)
+          .then(({ data }) => {
+            let msg = "답글 삭제 처리시 문제가 발생했습니다.";
+            if (data === "success") {
+              msg = "답글 삭제가 완료되었습니다.";
+              alert(msg);
+              location.reload(true);
+            } else alert(msg);
+          });
+      }
     },
   },
   // filters: {
