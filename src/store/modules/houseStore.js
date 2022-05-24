@@ -1,4 +1,5 @@
 import { sidoList, gugunList, houseList } from "@/api/house.js";
+//import http from "@/api/http";
 
 const houseStore = {
   namespaced: true,
@@ -7,9 +8,10 @@ const houseStore = {
     guguns: [{ value: null, text: "선택하세요" }],
     houses: [],
     house: null,
+    housedeals: [],
   },
 
-  getters: {},
+  getters: { getDeals: (state) => () => state.housedeals },
 
   mutations: {
     SET_SIDO_LIST: (state, sidos) => {
@@ -34,6 +36,9 @@ const houseStore = {
     },
     SET_DETAIL_HOUSE: (state, house) => {
       state.house = house;
+    },
+    SET_HOUSE_DEALS: (state, housedeals) => {
+      state.housedeals = housedeals;
     },
   },
 
@@ -86,6 +91,12 @@ const houseStore = {
           console.log(error);
         },
       );
+    },
+    houseDeals: ({ commit }, data) => {
+      // vue cli enviroment variables 검색
+      //.env.local file 생성.
+      // 반드시 VUE_APP으로 시작해야 한다.
+      commit("SET_HOUSE_LIST", data);
     },
     detailHouse: ({ commit }, house) => {
       // 나중에 house.일련번호를 이용하여 API 호출
