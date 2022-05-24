@@ -2,11 +2,11 @@
   <b-container class="bv-example-row mt-3">
     <b-row>
       <b-col>
-        <b-alert show><h3>글목록</h3></b-alert>
+        <b-alert show><h3>Q&A</h3></b-alert>
       </b-col>
     </b-row>
     <b-row class="mb-1">
-      <b-col class="text-left">
+      <!-- <b-col class="text-left">
         <input v-model="searchInput" />
         <b-button
           style="margin-left: 0.5rem"
@@ -15,7 +15,7 @@
           @click="searchQna"
           >검색</b-button
         >
-      </b-col>
+      </b-col> -->
       <b-col class="text-right">
         <b-button variant="outline-primary" @click="moveWrite()"
           >글쓰기</b-button
@@ -44,22 +44,16 @@
           </tbody>
         </b-table-simple>
       </b-col>
-      <!-- <b-col v-else class="text-center">도서 목록이 없습니다.</b-col> -->
-    </b-row>
-    <b-row>
-      <b-pagination
-        v-model="currentPage"
-        :total-rows="totalItemsCnt"
-        :per-page="perPage"
-        aria-controls="qna-list"
-      ></b-pagination>
+      <b-col v-else class="text-center">작성된 Q&A 없습니다.</b-col>
     </b-row>
   </b-container>
 </template>
 
 <script>
-import http from "@/api/http";
+import { listArticle } from "@/api/qna.js";
 import QnaListItem from "@/components/qna/item/QnaListItem";
+import { mapState } from "vuex";
+const memberStore = "memberStore";
 
 export default {
   name: "QnaList",
@@ -69,37 +63,35 @@ export default {
   data() {
     return {
       articles: [],
-      searchInput: "",
-      perPage: 10,
-      currentPage: 1,
-      totalItemsCnt: 0,
+      isAdmin: false,
     };
   },
   created() {
-    http.get(`/qna`).then(({ data }) => {
-      this.totalItemsCnt = data;
-      console.log(data);
-    });
-    http.get(`/qna/1`).then(({ data }) => {
-      this.articles = data;
-    });
+    let param = {
+      pg: 1,
+      spp: 20,
+      key: null,
+      word: null,
+    };
+    listArticle(
+      param,
+      (response) => {
+        this.articles = response.data;
+      },
+      (error) => {
+        console.log(error);
+      },
+    );
+    if (this.userInfo.userid === "admin") {
+      this.isAdmin = true;
+    }
+  },
+  computed: {
+    ...mapState(memberStore, ["userInfo"]),
   },
   methods: {
     moveWrite() {
       this.$router.push({ name: "qnaRegister" });
-    },
-
-    searchQna() {
-      http.get(`/qna/search/${this.searchInput}`).then(({ data }) => {
-        this.articles = data;
-      });
-    },
-  },
-  watch: {
-    currentPage(newPage) {
-      http.get(`/qna/${newPage}`).then(({ data }) => {
-        this.articles = data;
-      });
     },
   },
 };
