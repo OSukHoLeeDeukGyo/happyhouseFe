@@ -190,12 +190,18 @@ export default {
           ),
           title: this.houselist[i].aptCode,
         });
-        kakao.maps.event.addListener(marker, "click", () => {
+        kakao.maps.event.addListener(marker, "click", async () => {
           //클릭이벤트 추가
           this.aptSelected = true;
           //console.log(marker);
-          this.getHouseInfo(marker.getTitle());
+          await this.getHouseInfo(marker.getTitle(), marker);
           this.getHouseDeals(marker.getTitle());
+          /*if (this.infowindow) this.infowindow.close();
+          this.infowindow = new kakao.maps.InfoWindow({
+            content: this.house.aptName, // 인포윈도우에 표시할 내용
+          });
+
+          this.infowindow.open(this.map, marker);*/
           //console.log(this.housedeals);
         });
         //마커 넣기
@@ -221,27 +227,7 @@ export default {
         this.getPositions();
       }
     },
-    displayInfoWindow() {
-      if (this.infowindow && this.infowindow.getMap()) {
-        //이미 생성한 인포윈도우가 있기 때문에 지도 중심좌표를 인포윈도우 좌표로 이동시킨다.
-        this.map.setCenter(this.infowindow.getPosition());
-        return;
-      }
-      let lng = this.house.lng;
-      let lat = this.house.lat;
-      var iwContent = '<div style="padding:5px;">Hello World!</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-        iwPosition = new kakao.maps.LatLng(lat, lng), //인포윈도우 표시 위치입니다
-        iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
-
-      this.infowindow = new kakao.maps.InfoWindow({
-        map: this.map, // 인포윈도우가 표시될 지도
-        position: iwPosition,
-        content: iwContent,
-        removable: iwRemoveable,
-      });
-
-      this.map.setCenter(iwPosition);
-    },
+    displayInfoWindow() {},
     async getHouseList(guCode) {
       console.log("gethouselist :" + guCode);
       await http
@@ -286,7 +272,28 @@ export default {
         });
     },
   },
-  watch: {},
+  watch: {
+    center(latlng) {
+      console.log("watched");
+      this.map.setCenter(new kakao.maps.LatLng(latlng[0], latlng[1]));
+      //this.center = nv;
+    },
+    house(house) {
+      console.log("watched");
+      if (this.infowindow) this.infowindow.close();
+      //console.log(this.markers);
+      this.markers.forEach((marker) => {
+        if (marker.getTitle() == house.aptCode) {
+          console.log(marker);
+          this.infowindow = new kakao.maps.InfoWindow({
+            content: this.house.aptName, // 인포윈도우에 표시할 내용
+          });
+
+          this.infowindow.open(this.map, marker);
+        }
+      });
+    },
+  },
   mounted() {
     if (window.kakao && window.kakao.maps) {
       this.initMap();
