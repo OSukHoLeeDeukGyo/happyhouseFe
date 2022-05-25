@@ -57,6 +57,7 @@
 </template>
 
 <script>
+import latLngs from "@/utils/guLatLng";
 import { mapState, mapActions } from "vuex";
 const houseStore = "houseStore";
 export default {
@@ -77,10 +78,20 @@ export default {
         phone: "",
         address: "",
       },
+      options: [],
+      currentGu: "",
     };
   },
   props: {
     house: Object,
+  },
+  created() {
+    console.log(Object.keys(latLngs));
+    for (let i = 0; i < 25; i++) {
+      this.options.push(new Object());
+      this.options[i].value = Object.keys(latLngs)[i];
+      this.options[i].text = Object.keys(latLngs)[i];
+    }
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -316,6 +327,15 @@ export default {
         console.log("이거", el);
         if (el) el.className = "on";
       }
+    },
+    setCurrentGu() {
+      console.log(this.currentGu);
+      console.log(latLngs[this.currentGu]);
+      let moveLatLng = new kakao.maps.LatLng(
+        latLngs[this.currentGu][0],
+        latLngs[this.currentGu][1],
+      );
+      this.map.panTo(moveLatLng);
     },
   },
 };
