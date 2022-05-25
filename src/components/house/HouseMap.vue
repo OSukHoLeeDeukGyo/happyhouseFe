@@ -9,6 +9,7 @@
       @change="setCurrentGu"
       v-model="currentGu"
       :options="options"
+      class="gu-select"
     ></b-form-select>
     <div class="hAddr">
       <button @click="getCurrentGu">현재 구 불러오기</button>

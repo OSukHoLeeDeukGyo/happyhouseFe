@@ -127,6 +127,7 @@ const routes = [
   {
     path: "/AmenityView",
     name: "amenity",
+    beforeEnter: onlyAuthUser,
     component: () => import("@/views/AmenityView.vue"),
   },
   {
