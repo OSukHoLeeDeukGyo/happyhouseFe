@@ -170,6 +170,7 @@ export default {
     // 카테고리 검색을 요청하는 함수입니다
     searchPlaces() {
       if (!this.currCategory) {
+        console.log("curr empty");
         return;
       }
 
@@ -319,8 +320,14 @@ export default {
 
     // 카테고리를 클릭했을 때 호출되는 함수입니다
     onClickCategory(e) {
+<<<<<<< HEAD
       var id = e.target.closest("li").id;
       var className = e.target.closest("li").className;
+=======
+      console.log(e.target.id);
+      var id = e.target.id,
+        className = e.className;
+>>>>>>> d762f96869318ef4ad4473b16c4c0eafb73cc72d
       this.placeOverlay = new kakao.maps.CustomOverlay({ zIndex: 1 });
       this.placeOverlay.setMap(null);
       console.log(e.currentTarget);
@@ -329,9 +336,15 @@ export default {
         this.currCategory = "";
         this.changeCategoryClass();
         this.removeMarker();
+        //this.searchPlaces();
       } else {
         this.currCategory = id;
+<<<<<<< HEAD
         this.changeCategoryClass(e.target.closest("li"));
+=======
+        console.log(this.currCategory);
+        this.changeCategoryClass(this);
+>>>>>>> d762f96869318ef4ad4473b16c4c0eafb73cc72d
         this.searchPlaces();
       }
     },

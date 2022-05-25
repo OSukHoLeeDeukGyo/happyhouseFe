@@ -1,5 +1,6 @@
 <template>
-  <b-container class="bv-example-row">
+  <b-container class="bv-example-row p-3">
+    <button @click="close">X</button>
     <b-row>
       <b-col>
         <br />
@@ -32,17 +33,13 @@
         </b-row>
         <line-chart />
       </b-col>
-      <b-col
-        ><b-row>
-          <button @click="close">X</button>
-        </b-row></b-col
-      >
     </b-row>
   </b-container>
 </template>
 
 <script>
 import { mapState } from "vuex";
+import { mapMutations } from "vuex";
 import LineChart from "@/components/house/HouseChart.vue";
 //import http from "@/api/http";
 export default {
@@ -54,16 +51,21 @@ export default {
   components: { LineChart },
   props: { aptSelected: Boolean },
   methods: {
+    ...mapMutations("houseStore", [
+      "SET_DETAIL_HOUSE",
+      "SET_HOUSE_DEALS",
+      "SET_HOUSE_LIST",
+    ]),
     close() {
-      console.log(this.aptSelected);
       //this.aptSelected = false;
-      this.$emit("isAptSelected");
+      this.SET_DETAIL_HOUSE(null);
+      //this.$emit("isAptSelected");
       //this.currentApt;
     },
   },
 
   computed: {
-    ...mapState("houseStore", ["house", "housedeals"]),
+    ...mapState("houseStore", ["house", "housedeals", "housedealsyearly"]),
 
     // house() {
     //   return this.$store.state.house;
@@ -77,7 +79,7 @@ export default {
   },
   created() {
     console.log(this.house);
-    console.log(this.housedeals);
+    //console.log(this.housedeals);
   },
 };
 </script>
