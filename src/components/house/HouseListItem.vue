@@ -45,6 +45,7 @@ export default {
       "SET_HOUSE_DEALS",
       "SET_HOUSE_LIST",
       "SET_CENTER",
+      "SET_HOUSE_DEALS_YEARLY",
     ]),
     selectHouse() {
       console.log("listRow : ", this.apt.aptCode);
@@ -54,6 +55,7 @@ export default {
       let lng = this.apt.lng;
       this.SET_CENTER([lat, lng]);
       this.getHouseInfo(this.apt.aptCode);
+      this.getHouseDealsYearly(this.apt.aptCode);
       this.getHouseDeals(this.apt.aptCode);
     },
     colorChange(flag) {
@@ -68,6 +70,20 @@ export default {
         })
         .then(({ data }) => {
           this.SET_DETAIL_HOUSE(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getHouseDealsYearly(aptCode) {
+      http
+        .get(`/map/aptDealsYearly`, {
+          params: {
+            aptCode: aptCode,
+          },
+        })
+        .then(({ data }) => {
+          this.SET_HOUSE_DEALS_YEARLY(data);
         })
         .catch((error) => {
           console.log(error);

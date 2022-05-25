@@ -65,7 +65,7 @@ export default {
   },
 
   computed: {
-    ...mapState("houseStore", ["house", "housedeals"]),
+    ...mapState("houseStore", ["house", "housedeals", "housedealsyearly"]),
 
     // house() {
     //   return this.$store.state.house;

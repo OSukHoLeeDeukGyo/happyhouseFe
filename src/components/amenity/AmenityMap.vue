@@ -116,6 +116,7 @@ export default {
     // 카테고리 검색을 요청하는 함수입니다
     searchPlaces() {
       if (!this.currCategory) {
+        console.log("curr empty");
         return;
       }
 
@@ -258,8 +259,9 @@ export default {
 
     // 카테고리를 클릭했을 때 호출되는 함수입니다
     onClickCategory(e) {
+      console.log(e.target.id);
       var id = e.target.id,
-        className = this.className;
+        className = e.className;
       this.placeOverlay = new kakao.maps.CustomOverlay({ zIndex: 1 });
       this.placeOverlay.setMap(null);
 
@@ -267,8 +269,10 @@ export default {
         this.currCategory = "";
         this.changeCategoryClass();
         this.removeMarker();
+        //this.searchPlaces();
       } else {
         this.currCategory = id;
+        console.log(this.currCategory);
         this.changeCategoryClass(this);
         this.searchPlaces();
       }

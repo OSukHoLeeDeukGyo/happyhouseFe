@@ -11,10 +11,12 @@ const houseStore = {
     housedeals: [],
     houselist: [],
     center: [],
+    housedealsyearly: [],
   },
 
   getters: {
     getDeals: (state) => () => state.housedeals,
+    getDealsYearly: (state) => () => state.housedealsyearly,
     gethouses: (state) => () => state.houselist,
     getcenter(state) {
       return state.center;
@@ -47,6 +49,9 @@ const houseStore = {
     },
     SET_HOUSE_DEALS: (state, housedeals) => {
       state.housedeals = housedeals;
+    },
+    SET_HOUSE_DEALS_YEARLY: (state, housedealsyearly) => {
+      state.housedealsyearly = housedealsyearly;
     },
     SET_CENTER: (state, center) => {
       state.center = center;
@@ -85,6 +90,9 @@ const houseStore = {
     },
     houseDeals: ({ commit }, data) => {
       commit("SET_HOUSE_DEALS", data);
+    },
+    houseDealsYearly: ({ commit }, data) => {
+      commit("SET_HOUSE_DEALS_YEARLY", data);
     },
     detailHouse: ({ commit }, house) => {
       commit("SET_DETAIL_HOUSE", house);

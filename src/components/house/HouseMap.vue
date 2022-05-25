@@ -70,6 +70,7 @@ export default {
       "SET_DETAIL_HOUSE",
       "SET_HOUSE_DEALS",
       "SET_HOUSE_LIST",
+      "SET_HOUSE_DEALS_YEARLY",
     ]),
     initMap() {
       const container = document.getElementById("map");
@@ -195,6 +196,7 @@ export default {
           this.aptSelected = true;
           //console.log(marker);
           await this.getHouseInfo(marker.getTitle(), marker);
+          this.getHouseDealsYearly(marker.getTitle());
           this.getHouseDeals(marker.getTitle());
           /*if (this.infowindow) this.infowindow.close();
           this.infowindow = new kakao.maps.InfoWindow({
@@ -252,6 +254,20 @@ export default {
         })
         .then(({ data }) => {
           this.SET_DETAIL_HOUSE(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getHouseDealsYearly(aptCode) {
+      http
+        .get(`/map/aptDealsYearly`, {
+          params: {
+            aptCode: aptCode,
+          },
+        })
+        .then(({ data }) => {
+          this.SET_HOUSE_DEALS_YEARLY(data);
         })
         .catch((error) => {
           console.log(error);
