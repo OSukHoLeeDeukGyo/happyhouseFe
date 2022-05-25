@@ -1,45 +1,59 @@
 <template>
-  <div>
-    <p style="margin-top: -12px">
-      <em class="link">
-        <a href="/web/documentation/#CategoryCode" target="_blank"
-          >카테고리 코드목록을 보시려면 여기를 클릭하세요!</a
-        >
-      </em>
-    </p>
-    <div class="map_wrap">
-      <div
-        id="map"
-        style="width: 100%; height: 100%; position: relative; overflow: hidden"
-      ></div>
-      <ul id="category">
-        <li id="BK9" data-order="0">
-          <span class="category_bg bank"></span>
-          은행
-        </li>
-        <li id="MT1" data-order="1">
-          <span class="category_bg mart"></span>
-          마트
-        </li>
-        <li id="PM9" data-order="2">
-          <span class="category_bg pharmacy"></span>
-          약국
-        </li>
-        <li id="OL7" data-order="3">
-          <span class="category_bg oil"></span>
-          주유소
-        </li>
-        <li id="CE7" data-order="4">
-          <span class="category_bg cafe"></span>
-          카페
-        </li>
-        <li id="CS2" data-order="5">
-          <span class="category_bg store"></span>
-          편의점
-        </li>
-      </ul>
-    </div>
-  </div>
+  <b-container class="bv-example-row">
+    <b-row>
+      <b-col>
+        <div class="map_wrap">
+          <div
+            id="map"
+            style="
+              width: 100%;
+              height: 100%;
+              position: relative;
+              overflow: hidden;
+            "
+          ></div>
+          <ul id="category">
+            <li id="BK9" data-order="0">
+              <span class="category_bg bank"></span>
+              은행
+            </li>
+            <li id="MT1" data-order="1">
+              <span class="category_bg mart"></span>
+              마트
+            </li>
+            <li id="PM9" data-order="2">
+              <span class="category_bg pharmacy"></span>
+              약국
+            </li>
+            <li id="OL7" data-order="3">
+              <span class="category_bg oil"></span>
+              주유소
+            </li>
+            <li id="CE7" data-order="4">
+              <span class="category_bg cafe"></span>
+              카페
+            </li>
+            <li id="CS2" data-order="5">
+              <span class="category_bg store"></span>
+              편의점
+            </li>
+          </ul>
+        </div>
+      </b-col>
+      <b-col class="setup">
+        <b-row>
+          <b-form-select
+            @change="setCurrentGu"
+            v-model="currentGu"
+            :options="options"
+          ></b-form-select>
+        </b-row>
+        <b-row> {{ placeData.name }} </b-row>
+        <b-row> {{ placeData.phone }} </b-row>
+        <b-row> {{ placeData.address }} </b-row>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
@@ -58,6 +72,11 @@ export default {
       placeOverlay: null,
       currCategory: "",
       markers: [],
+      placeData: {
+        name: "",
+        phone: "",
+        address: "",
+      },
     };
   },
   props: {
@@ -74,10 +93,11 @@ export default {
         "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=" +
         process.env.VUE_APP_MAP_KEY +
         "&libraries=services,clusterer";
-      this.contentNode = document.createElement("div");
       document.head.appendChild(script);
-      this.addCategoryClickEvent();
     }
+    this.contentNode = document.createElement("div");
+    this.addCategoryClickEvent();
+    kakao.maps.event.addListener(this.map, "idle", this.searchPlaces);
   },
   computed: {
     ...mapState(houseStore, ["sido", "gugun", "houses", "isDetail"]),
@@ -160,9 +180,10 @@ export default {
 
         // 마커와 검색결과 항목을 클릭 했을 때
         // 장소정보를 표출하도록 클릭 이벤트를 등록합니다
-        (function (marker, place) {
-          kakao.maps.event.addListener(marker, "click", function () {
+        ((marker, place) => {
+          kakao.maps.event.addListener(marker, "click", () => {
             this.displayPlaceInfo(place);
+            console.log(place);
           });
         })(marker, places[i]);
       }
@@ -204,6 +225,9 @@ export default {
 
     // 클릭한 마커에 대한 장소 상세정보를 커스텀 오버레이로 표시하는 함수입니다
     displayPlaceInfo(place) {
+      this.placeData.name = place.place_name;
+      this.placeData.phone = place.phone;
+      this.placeData.address = place.road_address_name;
       var content =
         '<div class="placeinfo">' +
         '   <a class="title" href="' +
@@ -252,6 +276,9 @@ export default {
       var category = document.getElementById("category"),
         children = category.children;
 
+      console.log(category);
+      console.log(children);
+
       for (var i = 0; i < children.length; i++) {
         children[i].onclick = this.onClickCategory;
       }
@@ -259,11 +286,11 @@ export default {
 
     // 카테고리를 클릭했을 때 호출되는 함수입니다
     onClickCategory(e) {
-      console.log(e.target.id);
-      var id = e.target.id,
-        className = e.className;
+      var id = e.target.closest("li").id;
+      var className = e.target.closest("li").className;
       this.placeOverlay = new kakao.maps.CustomOverlay({ zIndex: 1 });
       this.placeOverlay.setMap(null);
+      console.log(e.currentTarget);
 
       if (className === "on") {
         this.currCategory = "";
@@ -272,8 +299,7 @@ export default {
         //this.searchPlaces();
       } else {
         this.currCategory = id;
-        console.log(this.currCategory);
-        this.changeCategoryClass(this);
+        this.changeCategoryClass(e.target.closest("li"));
         this.searchPlaces();
       }
     },
@@ -289,7 +315,8 @@ export default {
       }
 
       if (el) {
-        el.className = "on";
+        console.log("이거", el);
+        if (el) el.className = "on";
       }
     },
   },
@@ -307,7 +334,7 @@ export default {
 .map_wrap {
   position: relative;
   width: 100%;
-  height: 350px;
+  height: 600px;
 }
 #category {
   position: absolute;
