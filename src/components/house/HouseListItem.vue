@@ -1,5 +1,5 @@
 <template>
-  <b-row
+  <b-list-group-item
     class="m-2"
     @click="selectHouse"
     @mouseover="colorChange(true)"
@@ -14,14 +14,15 @@
       ></b-img>
     </b-col>
     <b-col cols="10" class="align-self-center">
-      [{{ house.일련번호 }}] {{ house.아파트 }}
+      [{{ apt.aptName }}] {{ apt.aptCode }}
     </b-col>
-  </b-row>
+  </b-list-group-item>
 </template>
 
 <script>
-import { mapActions } from "vuex";
 import { mapState } from "vuex";
+import http from "@/api/http";
+import { mapMutations } from "vuex";
 export default {
   name: "HouseListItem",
   data() {
@@ -30,23 +31,61 @@ export default {
     };
   },
   props: {
-    house: Object,
+    apt: Object,
   },
   computed: {
-    ...mapState("houseStore", ["house"]),
+    ...mapState("houseStore", ["house", "center"]),
     // houses() {
     //   return this.$store.state.houses;
     // },
   },
   methods: {
-    ...mapActions(["detailHouse"]),
+    ...mapMutations("houseStore", [
+      "SET_DETAIL_HOUSE",
+      "SET_HOUSE_DEALS",
+      "SET_HOUSE_LIST",
+      "SET_CENTER",
+    ]),
     selectHouse() {
-      console.log("listRow : ", this.house);
+      console.log("listRow : ", this.apt.aptCode);
       // this.$store.dispatch("getHouse", this.house);
-      this.detailHouse(this.house);
+      //this.detailHouse(this.house);
+      let lat = this.apt.lat;
+      let lng = this.apt.lng;
+      this.SET_CENTER([lat, lng]);
+      this.getHouseInfo(this.apt.aptCode);
+      this.getHouseDeals(this.apt.aptCode);
     },
     colorChange(flag) {
       this.isColor = flag;
+    },
+    async getHouseInfo(aptCode) {
+      await http
+        .get(`/map/aptDetail`, {
+          params: {
+            aptCode: aptCode,
+          },
+        })
+        .then(({ data }) => {
+          this.SET_DETAIL_HOUSE(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getHouseDeals(aptCode) {
+      http
+        .get(`/map/aptDeals`, {
+          params: {
+            aptCode: aptCode,
+          },
+        })
+        .then(({ data }) => {
+          this.SET_HOUSE_DEALS(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };

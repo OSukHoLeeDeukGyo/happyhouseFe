@@ -10,11 +10,15 @@ const houseStore = {
     house: null,
     housedeals: [],
     houselist: [],
+    center: [],
   },
 
   getters: {
     getDeals: (state) => () => state.housedeals,
     gethouses: (state) => () => state.houselist,
+    getcenter(state) {
+      return state.center;
+    },
   },
 
   mutations: {
@@ -43,6 +47,9 @@ const houseStore = {
     },
     SET_HOUSE_DEALS: (state, housedeals) => {
       state.housedeals = housedeals;
+    },
+    SET_CENTER: (state, center) => {
+      state.center = center;
     },
   },
 
@@ -81,6 +88,9 @@ const houseStore = {
     },
     detailHouse: ({ commit }, house) => {
       commit("SET_DETAIL_HOUSE", house);
+    },
+    getCenter: ({ commit }, center) => {
+      commit("SET_CENTER", center);
     },
   },
 };

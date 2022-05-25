@@ -1,13 +1,6 @@
 <template>
-  <b-container class="bv-example-row mt-3 text-center">
-    <h3 class="underline-orange">
-      <b-icon icon="house-fill"></b-icon> House Service
-    </h3>
-    <b-row>
-      <b-col>
-        <house-map></house-map>
-      </b-col>
-    </b-row>
+  <div class="maparea">
+    <house-map></house-map>
     <!-- <b-row>
       <b-col>
         <house-search-bar></house-search-bar>
@@ -21,7 +14,7 @@
         <house-detail />
       </b-col>
     </b-row>-->
-  </b-container>
+  </div>
 </template>
 <script>
 //import HouseSearchBar from "@/components/house/HouseSearchBar.vue";
@@ -46,5 +39,9 @@ export default {
     rgba(255, 255, 255, 0) 70%,
     rgba(231, 149, 27, 0.3) 30%
   );
+}
+.maparea {
+  width: 100%;
+  height: 80vh;
 }
 </style>

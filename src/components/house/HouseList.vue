@@ -1,15 +1,18 @@
 <template>
   <b-container
     v-if="houselist && houselist.length != 0"
-    class="bv-example-row mt-3"
+    class="bv-example-row p-3"
   >
-    <house-list-item
-      v-for="(house, index) in houselist"
-      :key="index"
-      :house="house"
-    />
+    <button class="popupclose" @click="close">X</button>
+    <b-list-group class="listarea"
+      ><house-list-item
+        v-for="(apt, index) in houselist"
+        :key="index"
+        :apt="apt"
+    /></b-list-group>
   </b-container>
   <b-container v-else class="bv-example-row mt-3">
+    <button @click="close">X</button>
     <b-row>
       <b-col><b-alert show>주택 목록이 없습니다.</b-alert></b-col>
     </b-row>
@@ -17,18 +20,18 @@
 </template>
 
 <script>
-//import HouseListItem from "@/components/house/HouseListItem.vue";
+import HouseListItem from "@/components/house/HouseListItem.vue";
 import { mapState } from "vuex";
 
 export default {
   name: "HouseList",
-  components: {},
+  components: { HouseListItem },
   props: { aptSelected: Boolean },
   data() {
     return {};
   },
   computed: {
-    ...mapState("houseStore", ["house", "houselist"]),
+    ...mapState("houseStore", ["houselist"]),
     // houses() {
     //   return this.$store.state.houses;
     // },
@@ -38,10 +41,19 @@ export default {
       console.log(this.guSelected);
       //this.aptSelected = false;
       this.$emit("isGuSelected");
+
       //this.currentApt;
     },
   },
 };
 </script>
 
-<style></style>
+<style>
+.listarea {
+  height: 100%;
+  overflow: auto;
+}
+.popupclose {
+  right: 0;
+}
+</style>

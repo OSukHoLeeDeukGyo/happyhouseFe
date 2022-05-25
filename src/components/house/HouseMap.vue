@@ -1,5 +1,5 @@
 <template>
-  <b-container class="bv-example-row">
+  <div class="mapwrap">
     <div id="map"></div>
     <div class="button-group">
       <button @click="emptyMarkers">마커 지우기</button>
@@ -15,18 +15,17 @@
       <span id="centerAddr">{{ currentGu }}</span>
     </div>
     <div class="popuparea">
+      <button class="listclose" @click="toggleGuSelected" v-show="!guSelected">
+        >
+      </button>
       <house-list
-        v-if="guSelected"
+        v-show="guSelected"
         @isGuSelected="isGuSelected"
         class="popup"
       ></house-list>
-      <house-detail
-        v-if="aptSelected"
-        @isAptSelected="isAptSelected"
-        class="popup"
-      ></house-detail>
+      <house-detail v-if="house" class="popup"></house-detail>
     </div>
-  </b-container>
+  </div>
 </template>
 <script>
 //import axios from "axios";
@@ -35,6 +34,7 @@ import HouseDetail from "@/components/house/HouseDetail.vue";
 import HouseList from "@/components/house/HouseList.vue";
 import { mapMutations } from "vuex";
 import { mapState } from "vuex";
+//import { mapGetters } from "vuex";
 export default {
   name: "HouseMap",
   components: {
@@ -57,14 +57,14 @@ export default {
     };
   },
   computed: {
-    ...mapState("houseStore", ["house", "houselist"]),
+    ...mapState("houseStore", ["house", "houselist", "center"]),
   },
   methods: {
-    isAptSelected() {
-      this.aptSelected = false;
-    },
     isGuSelected() {
       this.guSelected = false;
+    },
+    toggleGuSelected() {
+      this.guSelected = !this.guSelected;
     },
     ...mapMutations("houseStore", [
       "SET_DETAIL_HOUSE",
@@ -115,9 +115,12 @@ export default {
       this.aptListToMarkers();
     },
     async setCurrentGu() {
+      console.log("setcurrentGu");
+      this.guSelected = true;
       this.getPositions();
     },
     async getCurrentGu() {
+      this.guSelected = true;
       await this.searchAddrFromCoords(
         this.map.getCenter(),
         this.displayCenterInfo,
@@ -224,9 +227,10 @@ export default {
         this.map.setCenter(this.infowindow.getPosition());
         return;
       }
-
+      let lng = this.house.lng;
+      let lat = this.house.lat;
       var iwContent = '<div style="padding:5px;">Hello World!</div>', // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
-        iwPosition = new kakao.maps.LatLng(33.450701, 126.570667), //인포윈도우 표시 위치입니다
+        iwPosition = new kakao.maps.LatLng(lat, lng), //인포윈도우 표시 위치입니다
         iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
 
       this.infowindow = new kakao.maps.InfoWindow({
@@ -282,6 +286,7 @@ export default {
         });
     },
   },
+  watch: {},
   mounted() {
     if (window.kakao && window.kakao.maps) {
       this.initMap();
@@ -295,6 +300,8 @@ export default {
     }
   },
   created() {
+    this.SET_HOUSE_LIST([]);
+    this.SET_DETAIL_HOUSE(null);
     http
       .get(`/map/gugun`, {
         params: {
@@ -320,18 +327,30 @@ export default {
 <style>
 #map {
   width: 100%;
-  height: 600px;
+  height: 100%;
 }
+.listclose {
+  background-color: rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 1;
+}
+
 .popuparea {
   height: 100%;
   position: absolute;
   top: 0;
+  display: flex;
 }
 .popup {
   background-color: rgba(255, 255, 255, 0.8);
   z-index: 1;
   width: 300px;
   height: 100%;
+  position: relative;
+}
+.mapwrap {
+  height: 100%;
+  width: 100%;
   position: relative;
 }
 </style>
