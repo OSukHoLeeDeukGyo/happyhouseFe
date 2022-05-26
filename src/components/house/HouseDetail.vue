@@ -36,7 +36,8 @@
           <b-col>
             <b-alert show variant="danger"
               >최근 거래금액 :
-              {{ housedeals[housedeals.length - 1].dealAmount }}원</b-alert
+              <span v-if="this.eok">{{ eok }}억</span>
+              {{ man }}만원</b-alert
             >
           </b-col>
         </b-row>
@@ -54,7 +55,12 @@ import LineChart from "@/components/house/charts/HouseChart.vue";
 export default {
   name: "HouseDetail",
   data() {
-    return {};
+    return {
+      numDealAmount: 0,
+      eok: 0,
+      man: 0,
+      housedealstmp: null,
+    };
   },
 
   components: { LineChart },
@@ -75,6 +81,9 @@ export default {
 
   computed: {
     ...mapState("houseStore", ["house", "housedeals", "housedealsyearly"]),
+    priceCal() {
+      return this.housedeals;
+    },
 
     // house() {
     //   return this.$store.state.house;
@@ -86,10 +95,26 @@ export default {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
   },
+  watch: {
+    priceCal(val) {
+      this.housedeals = val;
+      this.numDealAmount = +this.housedeals[
+        this.housedeals.length - 1
+      ].dealAmount.replace(",", "");
+      this.eok = Math.floor(this.numDealAmount / 10000);
+      this.man = this.numDealAmount % 10000;
+    },
+  },
+
   created() {
     console.log("이거", this.house);
-    console.log(this.housedeals);
     //console.log(this.housedeals);
+    this.numDealAmount = +this.housedeals[
+      this.housedeals.length - 1
+    ].dealAmount.replace(",", "");
+    this.eok = Math.floor(this.numDealAmount / 10000);
+    this.man = this.numDealAmount % 10000;
+    console.log(this.eok, this.man);
   },
 };
 </script>
