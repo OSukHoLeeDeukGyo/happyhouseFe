@@ -40,7 +40,7 @@
 <script>
 import { mapState } from "vuex";
 import { mapMutations } from "vuex";
-import LineChart from "@/components/house/HouseChart.vue";
+import LineChart from "@/components/house/charts/HouseChart.vue";
 //import http from "@/api/http";
 export default {
   name: "HouseDetail",
