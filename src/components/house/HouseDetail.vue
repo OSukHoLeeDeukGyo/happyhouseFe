@@ -1,9 +1,16 @@
 <template>
   <b-container class="bv-example-row p-3">
-    <button @click="close">X</button>
+    <b-button class="popupclose" @click="close">X</b-button>
     <b-row>
-      <b-col>
+      <b-col class="aptdetail">
         <br />
+        <b-row>
+          <b-col>
+            <b-alert show variant="secondary"
+              >일련번호 : {{ house.aptCode }}</b-alert
+            >
+          </b-col>
+        </b-row>
         <b-row>
           <b-col>
             <b-alert show variant="primary"
@@ -12,20 +19,23 @@
 
               <br />
               <br />
-              최근 거래금액 : <br />{{
-                housedeals[housedeals.length - 1].area
-              }}평 <br />{{
-                housedeals[housedeals.length - 1].dealAmount.replace(",", "")
-              }}0000원
+              건축연도 : {{ house.buildYear }}년
+              <br />
+              <br />
+              주소 : {{ house.dongName }} {{ house.jibun }}
+              <br />
+              <br />
+              최근 거래금액 :
+              <span v-if="this.eok">{{ eok }}억</span>
+              {{ man }}만원
             </b-alert>
           </b-col>
         </b-row>
 
-        <line-chart />
+        <line-chart /><b-button v-b-modal.my-modal>상세 거래내역</b-button>
       </b-col>
-      <b-button v-b-modal.my-modal>Show Modal</b-button>
     </b-row>
-    <b-modal id="my-modal"><detail-chart></detail-chart></b-modal>
+    <b-modal id="my-modal" size="xl"><detail-chart></detail-chart></b-modal>
   </b-container>
 </template>
 
@@ -38,7 +48,12 @@ import DetailChart from "@/components/house/charts/HouseChartDetail.vue";
 export default {
   name: "HouseDetail",
   data() {
-    return {};
+    return {
+      numDealAmount: 0,
+      eok: 0,
+      man: 0,
+      housedealstmp: null,
+    };
   },
 
   components: { LineChart, DetailChart },
@@ -59,6 +74,9 @@ export default {
 
   computed: {
     ...mapState("houseStore", ["house", "housedeals", "housedealsyearly"]),
+    priceCal() {
+      return this.housedeals;
+    },
 
     // house() {
     //   return this.$store.state.house;
@@ -70,11 +88,37 @@ export default {
       return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
   },
+  watch: {
+    priceCal(val) {
+      this.housedeals = val;
+      this.numDealAmount = +this.housedeals[
+        this.housedeals.length - 1
+      ].dealAmount.replace(",", "");
+      this.eok = Math.floor(this.numDealAmount / 10000);
+      this.man = this.numDealAmount % 10000;
+    },
+  },
+
   created() {
-    console.log(this.house);
+    console.log("이거", this.house);
     //console.log(this.housedeals);
+    this.numDealAmount = +this.housedeals[
+      this.housedeals.length - 1
+    ].dealAmount.replace(",", "");
+    this.eok = Math.floor(this.numDealAmount / 10000);
+    this.man = this.numDealAmount % 10000;
+    console.log(this.eok, this.man);
   },
 };
 </script>
 
-<style></style>
+<style>
+.aptdetail {
+  height: 100%;
+  overflow: auto;
+}
+.popupclose {
+  height: 40px;
+  width: 40px;
+}
+</style>

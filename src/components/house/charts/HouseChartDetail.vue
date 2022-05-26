@@ -85,14 +85,16 @@ export default {
       });
       let dealamounts = [];
       this.housedeals.forEach((deal) => {
-        dealamounts.push(parseInt(deal.dealAmount.replace(",", "")));
+        dealamounts.push(
+          parseInt(deal.dealAmount.replace(",", "")) / deal.area,
+        );
       });
       //console.log(dealamounts);
       return {
         labels: dealdates,
         datasets: [
           {
-            label: "월별 평당가격",
+            label: "총 거래 평당가격",
             data: dealamounts,
           },
         ],

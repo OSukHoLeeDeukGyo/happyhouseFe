@@ -7,7 +7,8 @@
         >{{ subject }}</router-link
       >
     </b-th>
-    <b-td>{{ reply ? "O" : "X" }}</b-td>
+    <b-td v-if="this.reply"><b-img :src="require('@/assets/ans1.png')" /></b-td>
+    <b-td v-else><b-img :src="require('@/assets/ans2.png')" /></b-td>
     <b-td>{{ userid }}</b-td>
     <b-td>{{ regtime | dateFormat }}</b-td>
     <b-td>{{ hit }}</b-td>

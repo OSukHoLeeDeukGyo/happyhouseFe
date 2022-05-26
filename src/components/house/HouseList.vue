@@ -3,7 +3,7 @@
     v-if="houselist && houselist.length != 0"
     class="bv-example-row p-3"
   >
-    <button class="popupclose" @click="close">X</button>
+    <b-button class="popupclose" @click="close">X</b-button>
     <b-list-group class="listarea"
       ><house-list-item
         v-for="(apt, index) in houselist"
@@ -12,7 +12,7 @@
     /></b-list-group>
   </b-container>
   <b-container v-else class="bv-example-row mt-3">
-    <button @click="close">X</button>
+    <b-button class="popupclose" @click="close">X</b-button>
     <b-row>
       <b-col><b-alert show>주택 목록이 없습니다.</b-alert></b-col>
     </b-row>
@@ -55,5 +55,7 @@ export default {
 }
 .popupclose {
   right: 0;
+  height: 40px;
+  width: 40px;
 }
 </style>

@@ -83,11 +83,9 @@ export default {
       ps: null,
       contentNode: null,
       clusterer: null,
-      list: [],
-      positions: [],
-      placeOverlay: null,
+      // placeOverlay: null,
       currCategory: "",
-      markers: [],
+      amenitymarkers: [],
       placeData: {
         name: "",
         phone: "",
@@ -97,9 +95,7 @@ export default {
       currentGu: "",
     };
   },
-  props: {
-    house: Object,
-  },
+  props: {},
   created() {
     console.log(Object.keys(latLngs));
     for (let i = 0; i < 25; i++) {
@@ -134,13 +130,9 @@ export default {
     this.map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
   },
   computed: {
-    ...mapState(houseStore, ["sido", "gugun", "houses", "isDetail"]),
+    ...mapState(houseStore, ["sido", "gugun", "isDetail"]),
   },
-  watch: {
-    houses: function () {
-      this.marker();
-    },
-  },
+  watch: {},
   methods: {
     ...mapActions(houseStore, ["detailHouse", "getIsDetail"]),
     initMap() {
@@ -159,13 +151,13 @@ export default {
       // });
     },
     // 엘리먼트에 이벤트 핸들러를 등록하는 함수입니다
-    addEventHandle(target, type, callback) {
-      if (target.addEventListener) {
-        target.addEventListener(type, callback);
-      } else {
-        target.attachEvent("on" + type, callback);
-      }
-    },
+    // addEventHandle(target, type, callback) {
+    //   if (target.addEventListener) {
+    //     target.addEventListener(type, callback);
+    //   } else {
+    //     target.attachEvent("on" + type, callback);
+    //   }
+    // },
 
     // 카테고리 검색을 요청하는 함수입니다
     searchPlaces() {
@@ -175,7 +167,7 @@ export default {
       }
 
       // 커스텀 오버레이를 숨깁니다
-      this.placeOverlay.setMap(null);
+      // this.placeOverlay.setMap(null);
 
       // 지도에 표시되고 있는 마커를 제거합니다
       this.removeMarker();
@@ -244,17 +236,17 @@ export default {
         });
 
       marker.setMap(this.map); // 지도 위에 마커를 표출합니다
-      this.markers.push(marker); // 배열에 생성된 마커를 추가합니다
+      this.amenitymarkers.push(marker); // 배열에 생성된 마커를 추가합니다
 
       return marker;
     },
 
     // 지도 위에 표시되고 있는 마커를 모두 제거합니다
     removeMarker() {
-      for (var i = 0; i < this.markers.length; i++) {
-        this.markers[i].setMap(null);
+      for (var i = 0; i < this.amenitymarkers.length; i++) {
+        this.amenitymarkers[i].setMap(null);
       }
-      this.markers = [];
+      this.amenitymarkers = [];
     },
 
     // 클릭한 마커에 대한 장소 상세정보를 커스텀 오버레이로 표시하는 함수입니다
@@ -262,47 +254,48 @@ export default {
       this.placeData.name = place.place_name;
       this.placeData.phone = place.phone;
       this.placeData.address = place.road_address_name;
-      var content =
-        '<div class="placeinfo">' +
-        '   <a class="title" href="' +
-        place.place_url +
-        '" target="_blank" title="' +
-        place.place_name +
-        '">' +
-        place.place_name +
-        "</a>";
+      console.log(this.placeData);
+      // var content =
+      //   '<div class="placeinfo">' +
+      //   '   <a class="title" href="' +
+      //   place.place_url +
+      //   '" target="_blank" title="' +
+      //   place.place_name +
+      //   '">' +
+      //   place.place_name +
+      //   "</a>";
 
-      if (place.road_address_name) {
-        content +=
-          '    <span title="' +
-          place.road_address_name +
-          '">' +
-          place.road_address_name +
-          "</span>" +
-          '  <span class="jibun" title="' +
-          place.address_name +
-          '">(지번 : ' +
-          place.address_name +
-          ")</span>";
-      } else {
-        content +=
-          '    <span title="' +
-          place.address_name +
-          '">' +
-          place.address_name +
-          "</span>";
-      }
+      // if (place.road_address_name) {
+      //   content +=
+      //     '    <span title="' +
+      //     place.road_address_name +
+      //     '">' +
+      //     place.road_address_name +
+      //     "</span>" +
+      //     '  <span class="jibun" title="' +
+      //     place.address_name +
+      //     '">(지번 : ' +
+      //     place.address_name +
+      //     ")</span>";
+      // } else {
+      //   content +=
+      //     '    <span title="' +
+      //     place.address_name +
+      //     '">' +
+      //     place.address_name +
+      //     "</span>";
+      // }
 
-      content +=
-        '    <span class="tel">' +
-        place.phone +
-        "</span>" +
-        "</div>" +
-        '<div class="after"></div>';
+      // content +=
+      //   '    <span class="tel">' +
+      //   place.phone +
+      //   "</span>" +
+      //   "</div>" +
+      //   '<div class="after"></div>';
 
-      this.contentNode.innerHTML = content;
-      this.placeOverlay.setPosition(new kakao.maps.LatLng(place.y, place.x));
-      this.placeOverlay.setMap(this.map);
+      // this.contentNode.innerHTML = content;
+      // this.placeOverlay.setPosition(new kakao.maps.LatLng(place.y, place.x));
+      // this.placeOverlay.setMap(this.map);
     },
 
     // 각 카테고리에 클릭 이벤트를 등록합니다
@@ -322,8 +315,8 @@ export default {
     onClickCategory(e) {
       var id = e.target.closest("li").id;
       var className = e.target.closest("li").className;
-      this.placeOverlay = new kakao.maps.CustomOverlay({ zIndex: 1 });
-      this.placeOverlay.setMap(null);
+      // this.placeOverlay = new kakao.maps.CustomOverlay({ zIndex: 1 });
+      // this.placeOverlay.setMap(null);
       console.log(e.currentTarget);
 
       if (className === "on") {

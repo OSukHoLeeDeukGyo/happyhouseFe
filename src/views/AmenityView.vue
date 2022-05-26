@@ -27,5 +27,6 @@ export default {
     rgba(255, 255, 255, 0) 70%,
     rgba(255, 192, 91, 0.3) 30%
   );
+  margin-bottom: 2rem;
 }
 </style>
