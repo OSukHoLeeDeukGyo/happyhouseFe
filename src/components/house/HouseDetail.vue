@@ -6,13 +6,22 @@
         <br />
         <b-row>
           <b-col>
-            <b-alert show variant="secondary">일련번호 : {{}}</b-alert>
+            <b-alert show variant="secondary"
+              >일련번호 : {{ house.aptCode }}</b-alert
+            >
           </b-col>
         </b-row>
         <b-row>
           <b-col>
             <b-alert show variant="primary"
               >아파트 이름 : {{ house.aptName }}
+            </b-alert>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <b-alert show variant="warning"
+              >건축연도 : {{ house.buildYear }}년
             </b-alert>
           </b-col>
         </b-row>
@@ -78,7 +87,8 @@ export default {
     },
   },
   created() {
-    console.log(this.house);
+    console.log("이거", this.house);
+    console.log(this.housedeals);
     //console.log(this.housedeals);
   },
 };
