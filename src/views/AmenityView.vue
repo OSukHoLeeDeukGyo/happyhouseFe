@@ -20,12 +20,12 @@ export default {
 </script>
 
 <style scoped>
-.underline-green {
+.underline-orange {
   display: inline-block;
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0) 70%,
-    rgba(56, 233, 40, 0.3) 30%
+    rgba(255, 192, 91, 0.3) 30%
   );
 }
 </style>

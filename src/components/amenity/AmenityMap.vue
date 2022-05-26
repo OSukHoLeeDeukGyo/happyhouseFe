@@ -1,7 +1,7 @@
 <template>
   <b-container class="bv-example-row">
     <b-row>
-      <b-col>
+      <b-col cols="8">
         <div class="map_wrap">
           <div
             id="map"
@@ -40,23 +40,39 @@
           </ul>
         </div>
       </b-col>
-      <b-col class="setup">
+      <b-col cols="4" class="setup">
         <b-row>
+          <p style="margin: auto; font-weight: 600">위치</p>
           <b-form-select
             @change="setCurrentGu"
             v-model="currentGu"
             :options="options"
+            :select-size="5"
+            class="gu-select"
           ></b-form-select>
         </b-row>
-        <b-row> {{ placeData.name }} </b-row>
-        <b-row> {{ placeData.phone }} </b-row>
-        <b-row> {{ placeData.address }} </b-row>
+        <hr />
+        <b-row class="amenity">
+          <b-row class="amenity-name">
+            <span style="font-weight: 600">시설명 :&nbsp; </span>
+            {{ placeData.name }}
+          </b-row>
+          <b-row class="amenity-phone">
+            <span style="font-weight: 600">시설 전화번호 :&nbsp; </span>
+            {{ placeData.phone }}
+          </b-row>
+          <b-row class="amenity-address">
+            <span style="font-weight: 600">시설 주소 :&nbsp; </span>
+            {{ placeData.address }}
+          </b-row>
+        </b-row>
       </b-col>
     </b-row>
   </b-container>
 </template>
 
 <script>
+import latLngs from "@/utils/guLatLng";
 import { mapState, mapActions } from "vuex";
 const houseStore = "houseStore";
 export default {
@@ -77,10 +93,20 @@ export default {
         phone: "",
         address: "",
       },
+      options: [],
+      currentGu: "",
     };
   },
   props: {
     house: Object,
+  },
+  created() {
+    console.log(Object.keys(latLngs));
+    for (let i = 0; i < 25; i++) {
+      this.options.push(new Object());
+      this.options[i].value = Object.keys(latLngs)[i];
+      this.options[i].text = Object.keys(latLngs)[i];
+    }
   },
   mounted() {
     if (window.kakao && window.kakao.maps) {
@@ -98,6 +124,14 @@ export default {
     this.contentNode = document.createElement("div");
     this.addCategoryClickEvent();
     kakao.maps.event.addListener(this.map, "idle", this.searchPlaces);
+    var mapTypeControl = new kakao.maps.MapTypeControl();
+    // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
+    // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
+    this.map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+
+    // 지도 확대 축소를 제어할 수 있는  줌 컨트롤을 생성합니다
+    var zoomControl = new kakao.maps.ZoomControl();
+    this.map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
   },
   computed: {
     ...mapState(houseStore, ["sido", "gugun", "houses", "isDetail"]),
@@ -319,11 +353,20 @@ export default {
         if (el) el.className = "on";
       }
     },
+    setCurrentGu() {
+      console.log(this.currentGu);
+      console.log(latLngs[this.currentGu]);
+      let moveLatLng = new kakao.maps.LatLng(
+        latLngs[this.currentGu][0],
+        latLngs[this.currentGu][1],
+      );
+      this.map.panTo(moveLatLng);
+    },
   },
 };
 </script>
 
-<style>
+<style lang="scss" scope>
 .map_wrap,
 .map_wrap * {
   margin: 0;
@@ -334,7 +377,7 @@ export default {
 .map_wrap {
   position: relative;
   width: 100%;
-  height: 600px;
+  height: 700px;
 }
 #category {
   position: absolute;
@@ -464,5 +507,35 @@ export default {
   color: #999;
   font-size: 11px;
   margin-top: 0;
+}
+.amenity {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+
+  .amenity-name {
+    width: 30rem;
+    height: 2rem;
+    background: #ffdfdf;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
+    margin: 1rem;
+  }
+  .amenity-phone {
+    width: 30rem;
+    height: 2rem;
+    background: #deffce;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
+    margin: 1rem;
+  }
+  .amenity-address {
+    width: 30rem;
+    height: 2rem;
+    background: #ecfcff;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
+    margin: 1rem;
+  }
 }
 </style>
