@@ -6,31 +6,21 @@
         <br />
         <b-row>
           <b-col>
-            <b-alert show variant="secondary">일련번호 : {{}}</b-alert>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
             <b-alert show variant="primary"
-              >아파트 이름 : {{ house.aptName }}
+              >아파트 이름 : {{ house.aptName }} <br /><br />주소 :
+              {{ house.dongName }} {{ house.jibun }}
+
+              <br />
+              <br />
+              최근 거래금액 : <br />{{
+                housedeals[housedeals.length - 1].area
+              }}평 <br />{{
+                housedeals[housedeals.length - 1].dealAmount.replace(",", "")
+              }}0000원
             </b-alert>
           </b-col>
         </b-row>
-        <b-row>
-          <b-col>
-            <b-alert show variant="info"
-              >주소 : {{ house.dongName }} {{ house.jibun }}</b-alert
-            >
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <b-alert show variant="danger"
-              >최근 거래금액 :
-              {{ housedeals[housedeals.length - 1].dealAmount }}원</b-alert
-            >
-          </b-col>
-        </b-row>
+
         <line-chart />
       </b-col>
       <b-button v-b-modal.my-modal>Show Modal</b-button>
