@@ -13,9 +13,7 @@
         alt="Image 1"
       ></b-img>
     </b-col>
-    <b-col cols="10" class="align-self-center">
-      [{{ apt.aptName }}] {{ apt.aptCode }}
-    </b-col>
+    <b-col cols="10" class="align-self-center"> [{{ apt.aptName }}] </b-col>
   </b-list-group-item>
 </template>
 

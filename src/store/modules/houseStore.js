@@ -12,6 +12,11 @@ const houseStore = {
     houselist: [],
     center: [],
     housedealsyearly: [],
+    amenity: {
+      name: "",
+      phone: "",
+      address: "",
+    },
   },
 
   getters: {
@@ -20,6 +25,9 @@ const houseStore = {
     gethouses: (state) => () => state.houselist,
     getcenter(state) {
       return state.center;
+    },
+    getamenity(state) {
+      return state.amenity;
     },
   },
 
@@ -55,6 +63,9 @@ const houseStore = {
     },
     SET_CENTER: (state, center) => {
       state.center = center;
+    },
+    SET_DETAIL_AMENITY: (state, amenity) => {
+      state.amenity = amenity;
     },
   },
 
@@ -99,6 +110,9 @@ const houseStore = {
     },
     getCenter: ({ commit }, center) => {
       commit("SET_CENTER", center);
+    },
+    getAmenity: ({ commit }, amenity) => {
+      commit("SET_DETAIL_AMENITY", amenity);
     },
   },
 };

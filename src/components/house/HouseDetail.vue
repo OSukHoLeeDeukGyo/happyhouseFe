@@ -1,8 +1,8 @@
 <template>
   <b-container class="bv-example-row p-3">
-    <button @click="close">X</button>
+    <b-button class="popupclose" @click="close">X</b-button>
     <b-row>
-      <b-col>
+      <b-col class="aptdetail">
         <br />
         <b-row>
           <b-col>
@@ -14,36 +14,28 @@
         <b-row>
           <b-col>
             <b-alert show variant="primary"
-              >아파트 이름 : {{ house.aptName }}
-            </b-alert>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <b-alert show variant="warning"
-              >건축연도 : {{ house.buildYear }}년
-            </b-alert>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <b-alert show variant="info"
-              >주소 : {{ house.dongName }} {{ house.jibun }}</b-alert
-            >
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <b-alert show variant="danger"
-              >최근 거래금액 :
+              >아파트 이름 : {{ house.aptName }} <br /><br />주소 :
+              {{ house.dongName }} {{ house.jibun }}
+
+              <br />
+              <br />
+              건축연도 : {{ house.buildYear }}년
+              <br />
+              <br />
+              주소 : {{ house.dongName }} {{ house.jibun }}
+              <br />
+              <br />
+              최근 거래금액 :
               <span v-if="this.eok">{{ eok }}억</span>
-              {{ man }}만원</b-alert
-            >
+              {{ man }}만원
+            </b-alert>
           </b-col>
         </b-row>
-        <line-chart />
+
+        <line-chart /><b-button v-b-modal.my-modal>상세 거래내역</b-button>
       </b-col>
     </b-row>
+    <b-modal id="my-modal" size="xl"><detail-chart></detail-chart></b-modal>
   </b-container>
 </template>
 
@@ -51,6 +43,7 @@
 import { mapState } from "vuex";
 import { mapMutations } from "vuex";
 import LineChart from "@/components/house/charts/HouseChart.vue";
+import DetailChart from "@/components/house/charts/HouseChartDetail.vue";
 //import http from "@/api/http";
 export default {
   name: "HouseDetail",
@@ -63,7 +56,7 @@ export default {
     };
   },
 
-  components: { LineChart },
+  components: { LineChart, DetailChart },
   props: { aptSelected: Boolean },
   methods: {
     ...mapMutations("houseStore", [
@@ -119,4 +112,13 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.aptdetail {
+  height: 100%;
+  overflow: auto;
+}
+.popupclose {
+  height: 40px;
+  width: 40px;
+}
+</style>

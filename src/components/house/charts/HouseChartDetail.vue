@@ -77,22 +77,24 @@ export default {
     },
   },
   computed: {
-    ...mapState("houseStore", ["house", "housedeals", "housedealsyearly"]),
+    ...mapState("houseStore", ["house", "housedeals"]),
     chartData() {
       let dealdates = [];
-      this.housedealsyearly.forEach((deal) => {
-        dealdates.push(deal.dealYear);
+      this.housedeals.forEach((deal) => {
+        dealdates.push(deal.dealYear + ". " + deal.dealMonth);
       });
       let dealamounts = [];
-      this.housedealsyearly.forEach((deal) => {
-        dealamounts.push(parseInt(deal.dealAmount.replace(",", "")));
+      this.housedeals.forEach((deal) => {
+        dealamounts.push(
+          parseInt(deal.dealAmount.replace(",", "")) / deal.area,
+        );
       });
       //console.log(dealamounts);
       return {
         labels: dealdates,
         datasets: [
           {
-            label: "연도별 평당가격",
+            label: "총 거래 평당가격",
             data: dealamounts,
           },
         ],
