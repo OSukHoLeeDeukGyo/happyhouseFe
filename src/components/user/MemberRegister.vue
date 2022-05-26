@@ -5,7 +5,7 @@
         <b-alert variant="secondary" show><h3>회원가입</h3></b-alert>
       </b-col>
     </b-row>
-    <b-row>
+    <b-row class="log">
       <b-col cols="8">
         <b-card class="text-center mt-3" style="max-width: 40rem" align="left">
           <b-form class="text-left">
@@ -190,5 +190,10 @@ export default {
 .idchkmsg,
 .pwdchkmsg {
   color: red;
+}
+.log {
+  display: flex;
+  width: 1000px;
+  justify-content: center;
 }
 </style>

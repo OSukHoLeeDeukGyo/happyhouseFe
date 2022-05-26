@@ -39,6 +39,14 @@
             />
           </tbody>
         </b-table-simple>
+        <div class="pgn">
+          <b-pagination
+            v-model="currentPage"
+            :total-rows="articles.length"
+            :per-page="10"
+            class="mt-4"
+          ></b-pagination>
+        </div>
       </b-col>
       <b-col v-else class="text-center">
         <hr />
@@ -63,6 +71,7 @@ export default {
     return {
       articles: [],
       isAdmin: false,
+      currentPage: 1,
     };
   },
   created() {
@@ -104,5 +113,9 @@ export default {
 .tdSubject {
   width: 300px;
   text-align: left;
+}
+.pgn {
+  display: flex;
+  justify-content: center;
 }
 </style>

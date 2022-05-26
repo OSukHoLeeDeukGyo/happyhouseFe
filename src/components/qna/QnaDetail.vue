@@ -41,7 +41,7 @@
     <!-- 댓글이 없거나 수정중이면 -->
     <b-row class="mb-1" v-if="!isReplied || isModifying">
       <b-col>
-        <b-form @submit="onSubmit">
+        <b-form @submit="onSubmit" v-if="this.userInfo">
           <b-form-group
             id="userid-group"
             label="답변 작성자:"
@@ -149,11 +149,14 @@ export default {
         http.get(`/qna/hit/${this.article.articleno}`).then(() => {
           if (this.article.reply) {
             this.isReplied = true;
-            if (this.article.replier === this.userInfo.userid) {
+            if (
+              this.userInfo &&
+              this.article.replier === this.userInfo.userid
+            ) {
               this.isReplier = true;
             }
           }
-          if (this.userInfo.userid === this.article.userid) {
+          if (this.userInfo && this.userInfo.userid === this.article.userid) {
             this.isWriter = true;
           }
         });

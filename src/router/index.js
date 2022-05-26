@@ -82,7 +82,6 @@ const routes = [
       {
         path: "detail/:articleno",
         name: "noticeDetail",
-        beforeEnter: onlyAuthUser,
         component: () => import("@/components/notice/NoticeDetail.vue"),
       },
       {
@@ -113,7 +112,6 @@ const routes = [
       {
         path: "detail/:articleno",
         name: "qnaDetail",
-        beforeEnter: onlyAuthUser,
         component: () => import("@/components/qna/QnaDetail.vue"),
       },
       {
@@ -127,13 +125,11 @@ const routes = [
   {
     path: "/AmenityView",
     name: "amenity",
-    beforeEnter: onlyAuthUser,
     component: () => import("@/views/AmenityView.vue"),
   },
   {
     path: "/house",
     name: "house",
-    beforeEnter: onlyAuthUser,
     component: () => import("@/views/HouseView.vue"),
   },
   {
