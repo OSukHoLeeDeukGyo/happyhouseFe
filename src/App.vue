@@ -17,6 +17,18 @@ export default {
 </script>
 
 <style>
+#app {
+  height: 100vh;
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.8),
+      rgba(255, 255, 255, 0.8)
+    ),
+    url("./assets/bg.jpg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 a {
   text-decoration: none;
 }

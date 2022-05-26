@@ -1,13 +1,14 @@
 <template>
   <div>
-    <b-navbar class="navbar" toggleable="lg" type="dark">
+    <b-navbar id="navbar" class="navbar" toggleable="lg" type="dark">
       <b-navbar-brand href="#">
         <router-link to="/">
           <img
-            src="@/assets/ssafy_logo.png"
+            src="@/assets/HappyhouselogoWhite2.png"
             class="d-inline-block align-middle"
-            width="100px"
-            alt="ssafy"
+            width="200px"
+            alt="logo"
+            style="margin-right: 1rem"
           />
         </router-link>
       </b-navbar-brand>
@@ -40,27 +41,20 @@
             ></b-nav-item
           >
           <b-nav-item href="#"
-            ><router-link :to="{ name: 'todo' }" class="navItem"
-              ><b-icon icon="calendar-check" font-scale="1.5"></b-icon>
-              TodoList</router-link
-            ></b-nav-item
-          >
-          <b-nav-item href="#"
             ><router-link :to="{ name: 'qna' }" class="navItem"
               ><b-icon icon="calendar-check" font-scale="1.5"></b-icon>
-              Qna</router-link
+              Q&A</router-link
             ></b-nav-item
           >
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto" v-if="userInfo">
-          <b-nav-item class="align-self-center"
-            ><b-avatar
-              variant="primary"
-              v-text="userInfo ? userInfo.userid.charAt(0).toUpperCase() : ''"
-            ></b-avatar
-            >{{ userInfo.username }}({{ userInfo.userid }})님
-            환영합니다.</b-nav-item
+          <b-nav-text id="myinfo" class="align-self-center"
+            >Hello
+            <span style="font-weight: 600; color: white">{{
+              userInfo.username
+            }}</span
+            >!</b-nav-text
           >
           <b-nav-item class="align-self-center"
             ><router-link
@@ -123,7 +117,16 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  background-color: #0e6400;
+  background-color: #000;
+
+  .link {
+    text-decoration: none;
+    color: #fff;
+  }
+
+  #myinfo {
+    color: #c9c9c9;
+  }
 
   .navItem {
     color: #ffffff;
