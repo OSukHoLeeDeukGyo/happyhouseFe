@@ -30,10 +30,16 @@
 </template>
 
 <script>
+import http from "@/api/http";
 export default {
   name: "HomeView",
   props: {
     msg: String,
+  },
+  created() {
+    http.get("/home/news").then((response) => {
+      console.log(response, "good!");
+    });
   },
 };
 </script>

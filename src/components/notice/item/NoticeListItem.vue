@@ -1,13 +1,12 @@
 <template>
   <b-tr>
     <b-td>{{ articleno }}</b-td>
-    <b-th class="text-left">
+    <b-th class="text-center">
       <router-link
         :to="{ name: 'noticeDetail', params: { articleno: articleno } }"
         >{{ subject }}</router-link
       >
     </b-th>
-    <b-td>{{ hit }}</b-td>
     <b-td>{{ userid }}</b-td>
     <b-td>{{ regtime | dateFormat }}</b-td>
   </b-tr>
