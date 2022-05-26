@@ -8,18 +8,26 @@
         :options="options"
       ></b-form-select>
 
-      <b-button size="sm" variant="primary" @click="getCurrentGu">
+      <b-button
+        size="sm"
+        variant="primary"
+        @click="getCurrentGu"
+        class="markerbtn"
+      >
         현재 위치 </b-button
-      ><b-button size="sm" @click="emptyMarkers">마커 지우기</b-button>
+      ><b-button size="sm" @click="emptyMarkers" class="markerbtn"
+        >마커 지우기</b-button
+      >
     </div>
     <div class="popuparea">
       <button class="listclose" @click="toggleGuSelected" v-show="!guSelected">
-        >
+        <strong>></strong>
       </button>
       <house-list
         v-show="guSelected"
         @isGuSelected="isGuSelected"
         class="popup"
+        style="margin-top: 0; overflow: hidden; padding-top: 15px"
       ></house-list>
       <house-detail v-if="house" class="popup"></house-detail>
     </div>
@@ -50,7 +58,11 @@
         편의점
       </li>
     </ul>
-    <amenity-detail class="amenitypopup" v-if="amenity"></amenity-detail>
+    <amenity-detail
+      class="amenitypopup"
+      v-if="amenity"
+      style="padding: 10px"
+    ></amenity-detail>
   </div>
 </template>
 <script>
@@ -661,6 +673,12 @@ export default {
   z-index: 1;
   margin-left: 50%;
 }
+
+.markerbtn {
+  white-space: nowrap;
+  margin-left: 0.4rem;
+}
+
 #category {
   position: absolute;
   top: 10px;
@@ -671,11 +689,12 @@ export default {
   background: #fff;
   overflow: hidden;
   z-index: 2;
+  padding-left: 0px;
 }
 #category li {
   float: left;
   list-style: none;
-  width: 50px;
+  width: 60px;
   border-right: 1px solid #acacac;
   padding: 6px 0;
   text-align: center;
@@ -686,8 +705,6 @@ export default {
 }
 #category li:hover {
   background: #ffe6e6;
-  border-left: 1px solid #acacac;
-  margin-left: -1px;
 }
 #category li:last-child {
   margin-right: 0;

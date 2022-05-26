@@ -123,11 +123,6 @@ const routes = [
     ],
   },
   {
-    path: "/AmenityView",
-    name: "amenity",
-    component: () => import("@/views/AmenityView.vue"),
-  },
-  {
     path: "/house",
     name: "house",
     component: () => import("@/views/HouseView.vue"),

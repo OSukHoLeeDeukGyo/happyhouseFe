@@ -1,6 +1,11 @@
 <template>
   <b-container class="bv-example-row p-3">
-    <b-button class="popupclose" @click="close">X</b-button>
+    <b-img
+      :src="require('@/assets/xbtn.png')"
+      @click="close"
+      class="popupclose"
+      style="height: 1rem; width: 1rem"
+    />
     <b-row>
       <b-col class="aptdetail">
         <br />
@@ -118,7 +123,6 @@ export default {
   overflow: auto;
 }
 .popupclose {
-  height: 40px;
-  width: 40px;
+  cursor: pointer;
 }
 </style>

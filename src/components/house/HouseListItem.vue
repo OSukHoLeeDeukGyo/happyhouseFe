@@ -5,15 +5,11 @@
     @mouseover="colorChange(true)"
     @mouseout="colorChange(false)"
     :class="{ 'mouse-over-bgcolor': isColor }"
+    style="cursor: pointer"
   >
-    <b-col cols="2" class="text-center align-self-center">
-      <b-img
-        thumbnail
-        src="https://picsum.photos/250/250/?image=58"
-        alt="Image 1"
-      ></b-img>
+    <b-col cols="10" id="aptname" class="align-self-center">
+      {{ apt.aptName }}
     </b-col>
-    <b-col cols="10" class="align-self-center"> [{{ apt.aptName }}] </b-col>
   </b-list-group-item>
 </template>
 
@@ -108,6 +104,12 @@ export default {
 <style scoped>
 .apt {
   width: 50px;
+}
+#aptname {
+  width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .mouse-over-bgcolor {
   background-color: lightblue;

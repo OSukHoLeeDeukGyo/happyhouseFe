@@ -1,8 +1,13 @@
 <template>
   <b-container class="bv-example-row p-3">
     <b-row
-      ><b-button class="closebutton" @click="close">X</b-button>
-      <b-col class="setup">
+      ><b-img
+        :src="require('@/assets/xbtn.png')"
+        @click="close"
+        class="closebutton"
+        style="height: 1rem; width: 1rem"
+      />
+      <b-col class="setup" style="padding: 1rem">
         <hr />
         <hr />
         <hr />
@@ -86,7 +91,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 .placeinfo {
   position: relative;
   width: 100%;
@@ -103,7 +108,6 @@ export default {
 .placeinfo_wrap .after {
   content: "";
   position: relative;
-  margin-left: -12px;
   left: 50%;
   width: 22px;
   height: 12px;
@@ -179,7 +183,6 @@ export default {
 }
 .closebutton {
   margin-left: 10px;
-  height: 40px;
-  width: 40px;
+  cursor: pointer;
 }
 </style>

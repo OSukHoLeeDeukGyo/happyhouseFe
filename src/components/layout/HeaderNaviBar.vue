@@ -29,12 +29,6 @@
             ></b-nav-item
           >
           <b-nav-item href="#"
-            ><router-link :to="{ name: 'amenity' }" class="navItem"
-              ><b-icon icon="building" font-scale="1.5"></b-icon>
-              부대시설</router-link
-            ></b-nav-item
-          >
-          <b-nav-item href="#"
             ><router-link :to="{ name: 'house' }" class="navItem"
               ><b-icon icon="house-fill" font-scale="1.5"></b-icon>
               아파트정보</router-link

@@ -1,9 +1,15 @@
 <template>
   <b-container
     v-if="houselist && houselist.length != 0"
-    class="bv-example-row p-3"
+    class="bv-example-row"
+    style="overflow: hidden margin-top: !important 0;"
   >
-    <b-button class="popupclose" @click="close">X</b-button>
+    <b-img
+      :src="require('@/assets/xbtn.png')"
+      @click="close"
+      class="popupclose"
+      style="height: 1rem; width: 1rem"
+    />
     <b-list-group class="listarea"
       ><house-list-item
         v-for="(apt, index) in houselist"
@@ -11,8 +17,13 @@
         :apt="apt"
     /></b-list-group>
   </b-container>
-  <b-container v-else class="bv-example-row mt-3">
-    <b-button class="popupclose" @click="close">X</b-button>
+  <b-container v-else class="bv-example-row">
+    <b-img
+      :src="require('@/assets/xbtn.png')"
+      @click="close"
+      class="popupclose"
+      style="height: 1rem; width: 1rem"
+    />
     <b-row>
       <b-col><b-alert show>주택 목록이 없습니다.</b-alert></b-col>
     </b-row>
@@ -55,7 +66,7 @@ export default {
 }
 .popupclose {
   right: 0;
-  height: 40px;
-  width: 40px;
+  cursor: pointer;
+  margin: 0.5rem 0;
 }
 </style>
