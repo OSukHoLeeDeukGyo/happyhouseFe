@@ -33,7 +33,9 @@
         </b-row>
         <line-chart />
       </b-col>
+      <b-button v-b-modal.my-modal>Show Modal</b-button>
     </b-row>
+    <b-modal id="my-modal"><detail-chart></detail-chart></b-modal>
   </b-container>
 </template>
 
@@ -41,6 +43,7 @@
 import { mapState } from "vuex";
 import { mapMutations } from "vuex";
 import LineChart from "@/components/house/charts/HouseChart.vue";
+import DetailChart from "@/components/house/charts/HouseChartDetail.vue";
 //import http from "@/api/http";
 export default {
   name: "HouseDetail",
@@ -48,7 +51,7 @@ export default {
     return {};
   },
 
-  components: { LineChart },
+  components: { LineChart, DetailChart },
   props: { aptSelected: Boolean },
   methods: {
     ...mapMutations("houseStore", [
