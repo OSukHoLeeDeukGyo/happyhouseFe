@@ -2,30 +2,6 @@
 
 HappyHouse Frontend 부분을 제작하고 있습니다.
 
-## Project setup
+## 🖼
 
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-
-```
-npm run build
-```
-
-### Lints and fixes files
-
-```
-npm run lint
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).
+![image](https://user-images.githubusercontent.com/14370441/171169096-95768a5e-30b9-4e3b-acfc-f9797e7bef56.png)
